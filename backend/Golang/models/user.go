@@ -4,6 +4,8 @@ import "time"
 
 type User struct {
 	UserID            string    `json:"id"`
+	FirstName         string    `json:"first_name"`
+	LastName          string    `json:"last_name"`
 	Email             string    `json:"email"`
 	Password          string    `json:"password"`
 	FirstUser         bool      `json:"first_user"`
@@ -17,16 +19,17 @@ type User struct {
 
 type AdminUser struct {
 	AdminID    string `json:"id"`
-	FirstName  string `json:"first_name"`
-	LastName   string `json:"last_name"`
 	BirthPlace string `json:"birth_place"`
 	BirthDate  string `json:"date_of_birth"`
 	UserID     string `json:"user_id"`
 }
 
 type RegisterInput struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	RoleID    string `json:"role_id"`
 }
 
 type LoginInput struct {
@@ -48,11 +51,9 @@ type LoginResponse struct {
 }
 
 type UserResponse struct {
-	UserID     string `json:"id"`
-	Email      string `json:"email"`
-	RoleID     string `json:"role_id"`
-	FirstName  string `json:"first_name"`
-	LastName   string `json:"last_name"`
-	BirthPlace string `json:"birth_place"`
-	BirthDate  string `json:"date_of_birth"`
+	UserID    string `json:"id"`
+	Email     string `json:"email"`
+	RoleID    string `json:"role_id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
 }

@@ -31,6 +31,8 @@ func (auth *authRepositoryImpl) Login(ctx context.Context, tx *sql.Tx, email str
 	var user models.User
 	err := row.Scan(
 		&user.UserID,
+		&user.FirstName,
+		&user.LastName,
 		&user.Email,
 		&user.Password,
 		&user.FirstUser,
@@ -60,6 +62,8 @@ func (auth *authRepositoryImpl) Register(ctx context.Context, tx *sql.Tx, user *
 	var existingUser models.User
 	err := row.Scan(
 		&existingUser.UserID,
+		&existingUser.FirstName,
+		&existingUser.LastName,
 		&existingUser.Email,
 		&existingUser.Password,
 		&existingUser.FirstUser,
@@ -82,8 +86,8 @@ func (auth *authRepositoryImpl) Register(ctx context.Context, tx *sql.Tx, user *
 		return nil, errors.New("email sudah terdaftar")
 	}
 
-	SQL = `INSERT INTO users (id, email, password, first_user, is_active, is_verified, verification_token, role_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-	_, err = tx.ExecContext(ctx, SQL, user.UserID, user.Email, user.Password, user.FirstUser, user.IsActive, user.IsVerified, user.VerificationToken, user.RoleID, user.CreatedAt, user.UpdatedAt)
+	SQL = `INSERT INTO users (id, first_name, last_name, email, password, first_user, is_active, is_verified, verification_token, role_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+	_, err = tx.ExecContext(ctx, SQL, user.UserID, user.FirstName, user.LastName, user.Email, user.Password, user.FirstUser, user.IsActive, user.IsVerified, user.VerificationToken, user.RoleID, user.CreatedAt, user.UpdatedAt)
 	if err != nil {
 		log.Printf("Kesalahan saat insert data user: %v", err)
 		return nil, err
@@ -100,6 +104,8 @@ func (auth *authRepositoryImpl) VerifyEmail(ctx context.Context, tx *sql.Tx, otp
 	var user models.User
 	err := row.Scan(
 		&user.UserID,
+		&user.FirstName,
+		&user.LastName,
 		&user.Email,
 		&user.Password,
 		&user.FirstUser,
