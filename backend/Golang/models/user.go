@@ -47,7 +47,7 @@ type LoginResponse struct {
 	Token     string `json:"token"`
 }
 
-type UserAdminResponse struct {
+type UserResponse struct {
 	UserID     string `json:"id"`
 	Email      string `json:"email"`
 	RoleID     string `json:"role_id"`
