@@ -1,7 +1,38 @@
 package main
 
-import "fmt"
+import (
+	"github.com/arioprima/Jobseeker/tree/main/backend/Golang/controller"
+	"github.com/arioprima/Jobseeker/tree/main/backend/Golang/initializers"
+	"github.com/arioprima/Jobseeker/tree/main/backend/Golang/repository"
+	"github.com/arioprima/Jobseeker/tree/main/backend/Golang/routes"
+	"github.com/arioprima/Jobseeker/tree/main/backend/Golang/service"
+	"github.com/go-playground/validator/v10"
+	_ "github.com/go-sql-driver/mysql"
+	"log"
+)
 
 func main() {
-	fmt.Println("Hello, World!")
+	//checkConeection to database success or not
+	config, err := initializers.LoadConfig(".")
+	if err != nil {
+		log.Println("Load config error", err)
+	}
+	db, err := initializers.ConnectDB(&config)
+	if err != nil {
+		log.Println("Connect to database error", err)
+	} else {
+		log.Println("Connect to database successfully")
+	}
+	validate := validator.New()
+	authRepository := repository.NewAuthRepositoryImpl(db)
+	authService := service.NewAuthServiceImpl(authRepository, db, validate)
+	authController := controller.NewAuthController(authService)
+
+	router := routes.UserRouter(authController)
+	err = router.Run(":8080")
+	if err != nil {
+		log.Println("Run router error", err)
+	} else {
+		log.Println("Run router successfully")
+	}
 }
