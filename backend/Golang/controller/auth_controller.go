@@ -75,7 +75,7 @@ func (controller *AuthController) VerifyEmail(ctx *gin.Context) {
 	verifyResponse, err := controller.AuthService.VerifyEmail(ctx, verifyRequest)
 	if err != nil {
 		log.Printf("Error verifying email: %v", err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Code OTP is invalid", "status": http.StatusInternalServerError})
 		return
 	}
 

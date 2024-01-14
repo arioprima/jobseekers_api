@@ -72,7 +72,6 @@ func (auth *authRepositoryImpl) Register(ctx context.Context, tx *sql.Tx, user *
 		&existingUser.VerificationToken,
 		&existingUser.RoleID,
 		&existingUser.CreatedAt,
-		&existingUser.UpdatedAt,
 	)
 
 	if err != nil {
@@ -86,8 +85,8 @@ func (auth *authRepositoryImpl) Register(ctx context.Context, tx *sql.Tx, user *
 		return nil, errors.New("email sudah terdaftar")
 	}
 
-	SQL = `INSERT INTO users (id, first_name, last_name, email, password, first_user, is_active, is_verified, verification_token, role_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-	_, err = tx.ExecContext(ctx, SQL, user.UserID, user.FirstName, user.LastName, user.Email, user.Password, user.FirstUser, user.IsActive, user.IsVerified, user.VerificationToken, user.RoleID, user.CreatedAt, user.UpdatedAt)
+	SQL = `INSERT INTO users (id, first_name, last_name, email, password, first_user, is_active, is_verified, verification_token, role_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+	_, err = tx.ExecContext(ctx, SQL, user.UserID, user.FirstName, user.LastName, user.Email, user.Password, user.FirstUser, user.IsActive, user.IsVerified, user.VerificationToken, user.RoleID, user.CreatedAt)
 	if err != nil {
 		log.Printf("Kesalahan saat insert data user: %v", err)
 		return nil, err
@@ -129,11 +128,24 @@ func (auth *authRepositoryImpl) VerifyEmail(ctx context.Context, tx *sql.Tx, otp
 
 func (auth *authRepositoryImpl) UpdateUserVerificationStatus(ctx context.Context, tx *sql.Tx, email, token string) error {
 	//TODO implement me
-	SQL := `UPDATE users SET is_verified = true, verification_token = '' WHERE email = ? and verification_token = ?`
-	_, err := tx.ExecContext(ctx, SQL, email, token)
+	SQL := `UPDATE users SET is_verified = true WHERE email = ? and verification_token = ?`
+	result, err := tx.ExecContext(ctx, SQL, email, token)
 	if err != nil {
-		log.Printf("Kesalahan saat update status verifikasi user: %v", err)
+		log.Printf("Error updating user verification status: %v", err)
 		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Printf("Error getting rows affected: %v", err)
+		return err
+	}
+
+	log.Printf("Rows affected: %d", rowsAffected)
+
+	if rowsAffected == 0 {
+		log.Println("No rows updated")
+		return errors.New("no rows updated")
 	}
 
 	return nil

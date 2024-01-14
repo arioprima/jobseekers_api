@@ -68,10 +68,10 @@ func checkAuthorization(userRole, requiredRole string) bool {
 	switch requiredRole {
 	case "admin":
 		return userRole == "admin"
-	case "staff":
-		return userRole == "admin" || userRole == "staff"
-	case "employee":
-		return userRole == "admin" || userRole == "staff" || userRole == "employee"
+	case "recruiter":
+		return userRole == "admin" || userRole == "recruiter"
+	case "user":
+		return userRole == "admin" || userRole == "recruiter" || userRole == "user"
 	default:
 		return false
 	}

@@ -147,9 +147,13 @@ func (auth *AuthServiceImpl) Register(ctx context.Context, request models.Regist
 
 func (auth *AuthServiceImpl) VerifyEmail(ctx context.Context, request models.VerifyInput) (models.UserResponse, error) {
 	//TODO implement me
+	log.Println("Start VerifyEmail Function")
+
 	if err := auth.Validate.Struct(request); err != nil {
-		return models.UserResponse{}, fmt.Errorf("kesalahan validasi: %v", err)
+		log.Printf("Validation error: %v", err)
+		return models.UserResponse{}, err
 	}
+
 	tx, err := auth.DB.Begin()
 	if err != nil {
 		log.Printf("Error starting transaction: %v", err)
@@ -171,30 +175,24 @@ func (auth *AuthServiceImpl) VerifyEmail(ctx context.Context, request models.Ver
 	log.Printf("Email: %s, Token: %s", request.Email, request.Token)
 
 	user, err := auth.AuthRepository.VerifyEmail(ctx, tx, request.Token)
-
 	if err != nil {
+		log.Printf("Error verifying email: %v", err)
 		return models.UserResponse{}, err
 	}
 
 	if user == nil {
-		return models.UserResponse{}, errors.New("invalid token")
+		log.Println("User not found")
+		return models.UserResponse{}, errors.New("user does not exist")
 	}
 
-	if user.Email != request.Email {
-		return models.UserResponse{}, errors.New("invalid email")
-	}
-
-	if user.VerificationToken != request.Token {
-		return models.UserResponse{}, errors.New("invalid token")
-	}
-
-	user.IsVerified = true
-	user.VerificationToken = ""
-
-	err = auth.AuthRepository.UpdateUserVerificationStatus(ctx, tx, user.Email, user.VerificationToken)
+	// Perbaiki pemanggilan fungsi UpdateUserVerificationStatus untuk mencocokkan perubahan
+	err = auth.AuthRepository.UpdateUserVerificationStatus(ctx, tx, request.Email, request.Token)
 	if err != nil {
+		log.Printf("Error updating user verification status: %v", err)
 		return models.UserResponse{}, err
 	}
+
+	log.Println("End VerifyEmail Function")
 
 	return models.UserResponse{
 		UserID:    user.UserID,

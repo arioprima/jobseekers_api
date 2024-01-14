@@ -38,9 +38,8 @@ type LoginInput struct {
 }
 
 type VerifyInput struct {
-	Email     string `json:"email"`
-	TokenType string `json:"token_type"`
-	Token     string `json:"token"`
+	Email string `json:"email"`
+	Token string `json:"token"`
 }
 
 type LoginResponse struct {
