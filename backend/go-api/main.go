@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/arioprima/Jobseeker/tree/main/backend/Golang/controller"
-	"github.com/arioprima/Jobseeker/tree/main/backend/Golang/initializers"
-	"github.com/arioprima/Jobseeker/tree/main/backend/Golang/repository"
-	"github.com/arioprima/Jobseeker/tree/main/backend/Golang/routes"
-	"github.com/arioprima/Jobseeker/tree/main/backend/Golang/service"
+	"github.com/arioprima/jobseeker/tree/main/backend/go-api/controller"
+	"github.com/arioprima/jobseeker/tree/main/backend/go-api/initializers"
+	"github.com/arioprima/jobseeker/tree/main/backend/go-api/repository"
+	"github.com/arioprima/jobseeker/tree/main/backend/go-api/routes"
+	"github.com/arioprima/jobseeker/tree/main/backend/go-api/service"
 	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
 	"log"

@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"github.com/arioprima/Jobseeker/tree/main/backend/go-api/initializers"
-	"github.com/arioprima/Jobseeker/tree/main/backend/go-api/utils"
+	"github.com/arioprima/jobseeker/tree/main/backend/go-api/initializers"
+	"github.com/arioprima/jobseeker/tree/main/backend/go-api/utils"
 	"net/http"
 	"strings"
 
