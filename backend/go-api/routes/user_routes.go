@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"github.com/arioprima/Jobseeker/tree/main/backend/Golang/controller"
+	"github.com/arioprima/Jobseeker/tree/main/backend/go-api/controller"
 	"github.com/gin-gonic/gin"
 )
 

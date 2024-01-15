@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"github.com/arioprima/Jobseeker/tree/main/backend/Golang/models"
-	"github.com/arioprima/Jobseeker/tree/main/backend/Golang/service"
+	"github.com/arioprima/Jobseeker/tree/main/backend/go-api/models"
+	"github.com/arioprima/Jobseeker/tree/main/backend/go-api/service"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"

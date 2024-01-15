@@ -3,8 +3,8 @@ package utils
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/arioprima/Jobseeker/tree/main/backend/Golang/initializers"
-	"github.com/arioprima/Jobseeker/tree/main/backend/Golang/models"
+	"github.com/arioprima/Jobseeker/tree/main/backend/go-api/initializers"
+	"github.com/arioprima/Jobseeker/tree/main/backend/go-api/models"
 	"gopkg.in/gomail.v2"
 	"log"
 	"math/rand"

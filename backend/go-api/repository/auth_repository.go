@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"github.com/arioprima/Jobseeker/tree/main/backend/Golang/models"
+	"github.com/arioprima/Jobseeker/tree/main/backend/go-api/models"
 	"log"
 )
 
