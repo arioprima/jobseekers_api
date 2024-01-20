@@ -83,8 +83,8 @@ func (auth *AuthServiceImpl) Login(ctx context.Context, request models.LoginInpu
 	}
 
 	return map[string]interface{}{
-		"TokenType": "Bearer",
-		"Token":     token,
+		"token_type": "Bearer",
+		"token":      token,
 	}, nil
 }
 
