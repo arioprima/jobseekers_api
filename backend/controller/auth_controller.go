@@ -29,15 +29,15 @@ func (controller *AuthController) Login(ctx *gin.Context) {
 
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
-			"Status":  http.StatusInternalServerError,
-			"Message": fmt.Sprintf("%v", err),
+			"status":  http.StatusInternalServerError,
+			"message": fmt.Sprintf("%v", err),
 		})
 		return
 	} else {
 		ctx.IndentedJSON(http.StatusOK, gin.H{
-			"Status":  http.StatusOK,
-			"Message": "Success",
-			"Data":    loginResponse,
+			"status":  http.StatusOK,
+			"message": "Success",
+			"data":    loginResponse,
 		})
 	}
 }
@@ -54,14 +54,14 @@ func (controller *AuthController) Register(ctx *gin.Context) {
 
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
-			"Status":  http.StatusInternalServerError,
-			"Message": "Internal Server Error",
+			"status":  http.StatusInternalServerError,
+			"message": "Internal Server Error",
 		})
 	} else {
 		ctx.IndentedJSON(http.StatusCreated, gin.H{
-			"Status":  http.StatusCreated,
-			"Message": "OK",
-			"Data":    registerResponse,
+			"status":  http.StatusCreated,
+			"message": "OK",
+			"data":    registerResponse,
 		})
 	}
 }
