@@ -3,11 +3,12 @@ package utils
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/arioprima/jobseeker/tree/main/backend/go-api/initializers"
-	"github.com/arioprima/jobseeker/tree/main/backend/go-api/models"
-	"gopkg.in/gomail.v2"
 	"log"
 	"math/rand"
+
+	"github.com/arioprima/jobseeker/tree/main/backend/initializers"
+	"github.com/arioprima/jobseeker/tree/main/backend/models"
+	"gopkg.in/gomail.v2"
 )
 
 // 👇 Email template parser

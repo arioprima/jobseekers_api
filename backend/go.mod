@@ -1,4 +1,4 @@
-module github.com/arioprima/jobseeker/tree/main/backend/go-api
+module github.com/arioprima/jobseeker/tree/main/backend
 
 go 1.21.5
 

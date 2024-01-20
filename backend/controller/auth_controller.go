@@ -1,11 +1,12 @@
 package controller
 
 import (
-	"github.com/arioprima/jobseeker/tree/main/backend/go-api/models"
-	"github.com/arioprima/jobseeker/tree/main/backend/go-api/service"
-	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+
+	"github.com/arioprima/jobseeker/tree/main/backend/models"
+	"github.com/arioprima/jobseeker/tree/main/backend/service"
+	"github.com/gin-gonic/gin"
 )
 
 type AuthController struct {

@@ -4,8 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"github.com/arioprima/jobseeker/tree/main/backend/go-api/models"
 	"log"
+
+	"github.com/arioprima/jobseeker/tree/main/backend/models"
 )
 
 type AuthRepository interface {

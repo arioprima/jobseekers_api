@@ -1,10 +1,11 @@
 package middleware
 
 import (
-	"github.com/arioprima/jobseeker/tree/main/backend/go-api/initializers"
-	"github.com/arioprima/jobseeker/tree/main/backend/go-api/utils"
 	"net/http"
 	"strings"
+
+	"github.com/arioprima/jobseeker/tree/main/backend/initializers"
+	"github.com/arioprima/jobseeker/tree/main/backend/utils"
 
 	"github.com/gin-gonic/gin"
 )

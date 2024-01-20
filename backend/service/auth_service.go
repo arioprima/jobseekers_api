@@ -5,13 +5,14 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/arioprima/jobseeker/tree/main/backend/go-api/initializers"
-	"github.com/arioprima/jobseeker/tree/main/backend/go-api/models"
-	"github.com/arioprima/jobseeker/tree/main/backend/go-api/repository"
-	"github.com/arioprima/jobseeker/tree/main/backend/go-api/utils"
-	"github.com/go-playground/validator/v10"
 	"log"
 	"time"
+
+	"github.com/arioprima/jobseeker/tree/main/backend/initializers"
+	"github.com/arioprima/jobseeker/tree/main/backend/models"
+	"github.com/arioprima/jobseeker/tree/main/backend/repository"
+	"github.com/arioprima/jobseeker/tree/main/backend/utils"
+	"github.com/go-playground/validator/v10"
 )
 
 type AuthService interface {
