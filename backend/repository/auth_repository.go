@@ -96,8 +96,8 @@ func (auth *authRepositoryImpl) Register(ctx context.Context, tx *sql.Tx, user *
 
 	if err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
-			log.Printf("Kesalahan memeriksa email yang sudah ada: %v", err)
-			return nil, err
+			// log.Printf("Kesalahan memeriksa email yang sudah ada: %v", err)
+			return nil, errors.New("email already registered")
 		}
 	}
 

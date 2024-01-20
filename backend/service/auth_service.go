@@ -142,7 +142,7 @@ func (auth *AuthServiceImpl) Register(ctx context.Context, request models.Regist
 	newUser.VerificationToken = otp
 	_, err = auth.AuthRepository.Register(ctx, tx, &newUser)
 	if err != nil {
-		return "", fmt.Errorf("kesalahan register user: %v", err)
+		return "email already registered", err
 	}
 
 	utils.SendEmail(&newUser, otp)

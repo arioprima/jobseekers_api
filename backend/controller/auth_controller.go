@@ -55,7 +55,7 @@ func (controller *AuthController) Register(ctx *gin.Context) {
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
 			"status":  http.StatusInternalServerError,
-			"message": "Internal Server Error",
+			"message": fmt.Sprintf("%v", err),
 		})
 	} else {
 		ctx.IndentedJSON(http.StatusCreated, gin.H{
