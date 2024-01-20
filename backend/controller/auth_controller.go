@@ -2,7 +2,6 @@ package controller
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/arioprima/jobseeker/tree/main/backend/models"
@@ -76,7 +75,7 @@ func (controller *AuthController) VerifyEmail(ctx *gin.Context) {
 
 	verifyResponse, err := controller.AuthService.VerifyEmail(ctx, verifyRequest)
 	if err != nil {
-		log.Printf("Error verifying email: %v", err)
+		// log.Printf("Error verifying email: %v", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf("%v", err), "status": http.StatusInternalServerError})
 		return
 	}

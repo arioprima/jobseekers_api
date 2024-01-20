@@ -14,7 +14,7 @@ type AuthRepository interface {
 	Login(ctx context.Context, tx *sql.Tx, email, password string) (*models.User, error)
 	Register(ctx context.Context, tx *sql.Tx, user *models.User) (*models.User, error)
 	VerifyEmail(ctx context.Context, tx *sql.Tx, otpCode string) (*models.User, error)
-	UpdateUserVerificationStatus(ctx context.Context, tx *sql.Tx, email, token string) error
+	UpdateUserVerificationStatus(ctx context.Context, tx *sql.Tx, email, token string) (*models.User, error)
 }
 
 type authRepositoryImpl struct {
@@ -145,28 +145,66 @@ func (auth *authRepositoryImpl) VerifyEmail(ctx context.Context, tx *sql.Tx, otp
 
 	return &user, nil
 }
-
-func (auth *authRepositoryImpl) UpdateUserVerificationStatus(ctx context.Context, tx *sql.Tx, email, token string) error {
-	//TODO implement me
+func (auth *authRepositoryImpl) UpdateUserVerificationStatus(ctx context.Context, tx *sql.Tx, email, token string) (*models.User, error) {
+	// TODO implement me
 	SQL := `UPDATE users SET is_verified = true WHERE email = ? and verification_token = ?`
 	result, err := tx.ExecContext(ctx, SQL, email, token)
 	if err != nil {
-		log.Printf("Error updating user verification status: %v", err)
-		return err
+		return nil, err
 	}
 
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		log.Printf("Error getting rows affected: %v", err)
-		return err
-	}
-
-	log.Printf("Rows affected: %d", rowsAffected)
-
+	rowsAffected, _ := result.RowsAffected()
 	if rowsAffected == 0 {
-		return errors.New("no rows updated")
+		var user models.User
+
+		// Pindahkan pemindaian baris ke sini setelah memastikan bahwa token valid
+		row := tx.QueryRowContext(ctx, "SELECT * FROM users WHERE email = ? FOR UPDATE", email)
+		err = row.Scan(
+			&user.UserID,
+			&user.FirstName,
+			&user.LastName,
+			&user.Email,
+			&user.Password,
+			&user.FirstUser,
+			&user.IsActive,
+			&user.IsVerified,
+			&user.VerificationToken,
+			&user.RoleID,
+			&user.CreatedAt,
+			&user.UpdatedAt,
+		)
+
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				log.Printf("email is not registered: %v", err)
+				return nil, errors.New("email is not registered")
+			}
+			return nil, err
+		} else if user.IsVerified {
+			log.Printf("email is already verified: %v", err)
+			return nil, errors.New("email is already verified")
+		}
+
+		log.Printf("token is not valid: %v", err)
+		return nil, errors.New("token is not valid")
 	}
 
-	return nil
+	var user models.User
+	row := tx.QueryRowContext(ctx, "SELECT * FROM users WHERE email = ? FOR UPDATE", email)
+	err = row.Scan(
+		&user.UserID,
+		&user.FirstName,
+		&user.LastName,
+		&user.Email,
+		&user.Password,
+		&user.FirstUser,
+		&user.IsActive,
+		&user.IsVerified,
+		&user.VerificationToken,
+		&user.RoleID,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
 
+	return &user, nil
 }

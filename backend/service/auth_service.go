@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -18,7 +17,7 @@ import (
 type AuthService interface {
 	Login(ctx context.Context, request models.LoginInput) (map[string]interface{}, error)
 	Register(ctx context.Context, request models.RegisterInput) (string, error)
-	VerifyEmail(ctx context.Context, request models.VerifyInput) (models.UserResponse, error)
+	VerifyEmail(ctx context.Context, request models.VerifyInput) (map[string]interface{}, error)
 }
 
 type AuthServiceImpl struct {
@@ -151,19 +150,17 @@ func (auth *AuthServiceImpl) Register(ctx context.Context, request models.Regist
 	return "check your email", nil
 }
 
-func (auth *AuthServiceImpl) VerifyEmail(ctx context.Context, request models.VerifyInput) (models.UserResponse, error) {
+func (auth *AuthServiceImpl) VerifyEmail(ctx context.Context, request models.VerifyInput) (map[string]interface{}, error) {
 	//TODO implement me
-	log.Println("Start VerifyEmail Function")
-
 	if err := auth.Validate.Struct(request); err != nil {
 		log.Printf("Validation error: %v", err)
-		return models.UserResponse{}, err
+		return nil, fmt.Errorf("validation error: %v", err)
 	}
 
 	tx, err := auth.DB.Begin()
 	if err != nil {
 		log.Printf("Error starting transaction: %v", err)
-		return models.UserResponse{}, err
+		return nil, fmt.Errorf("error starting transaction: %v", err)
 	}
 
 	defer func() {
@@ -177,35 +174,30 @@ func (auth *AuthServiceImpl) VerifyEmail(ctx context.Context, request models.Ver
 			}
 		}
 	}()
-
-	log.Printf("Email: %s, Token: %s", request.Email, request.Token)
-
 	user, err := auth.AuthRepository.VerifyEmail(ctx, tx, request.Token)
 	if err != nil {
-		log.Printf("Error verifying email: %v", err)
-		return models.UserResponse{}, err
-	}
-
-	if user == nil {
-		log.Println("User not found")
-		return models.UserResponse{}, errors.New("user does not exist")
+		return map[string]interface{}{
+			"message": fmt.Sprintf("%v", err),
+		}, err
 	}
 
 	// Perbaiki pemanggilan fungsi UpdateUserVerificationStatus untuk mencocokkan perubahan
-	err = auth.AuthRepository.UpdateUserVerificationStatus(ctx, tx, request.Email, request.Token)
+	user, err = auth.AuthRepository.UpdateUserVerificationStatus(ctx, tx, request.Email, request.Token)
 	if err != nil {
-		log.Printf("Error updating user verification status: %v", err)
-		return models.UserResponse{}, err
+		// log.Printf("Error updating user verification status: %v", err)
+		return map[string]interface{}{
+			"message": fmt.Sprintf("%v", err),
+		}, err
 	}
 
-	log.Println("End VerifyEmail Function")
+	// log.Println("End VerifyEmail Function")
 
-	return models.UserResponse{
-		UserID:    user.UserID,
-		Email:     user.Email,
-		RoleID:    user.RoleID,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		FirstUser: user.FirstUser,
+	return map[string]interface{}{
+		"id":         user.UserID,
+		"email":      user.Email,
+		"role_id":    user.RoleID,
+		"first_name": user.FirstName,
+		"last_name":  user.LastName,
+		"first_user": user.FirstUser,
 	}, nil
 }
