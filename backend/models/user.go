@@ -42,17 +42,11 @@ type VerifyInput struct {
 	Token string `json:"token"`
 }
 
-type LoginResponse struct {
-	Email     string `json:"email"`
-	FirstUser bool   `json:"first_user"`
-	TokenType string `json:"token_type"`
-	Token     string `json:"token"`
-}
-
 type UserResponse struct {
 	UserID    string `json:"id"`
 	Email     string `json:"email"`
 	RoleID    string `json:"role_id"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
+	FirstUser bool   `json:"first_user"`
 }

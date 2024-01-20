@@ -16,7 +16,7 @@ import (
 )
 
 type AuthService interface {
-	Login(ctx context.Context, request models.LoginInput) (models.LoginResponse, error)
+	Login(ctx context.Context, request models.LoginInput) (map[string]interface{}, error)
 	Register(ctx context.Context, request models.RegisterInput) (string, error)
 	VerifyEmail(ctx context.Context, request models.VerifyInput) (models.UserResponse, error)
 }
@@ -31,11 +31,10 @@ func NewAuthServiceImpl(authRepository repository.AuthRepository, db *sql.DB, va
 	return &AuthServiceImpl{AuthRepository: authRepository, DB: db, Validate: validate}
 }
 
-func (auth *AuthServiceImpl) Login(ctx context.Context, request models.LoginInput) (models.LoginResponse, error) {
-	//TODO implement me
+func (auth *AuthServiceImpl) Login(ctx context.Context, request models.LoginInput) (map[string]interface{}, error) {
 	tx, err := auth.DB.Begin()
 	if err != nil {
-		return models.LoginResponse{}, err
+		return nil, err
 	}
 	defer func() {
 		if r := recover(); r != nil {
@@ -51,15 +50,19 @@ func (auth *AuthServiceImpl) Login(ctx context.Context, request models.LoginInpu
 		}
 	}()
 
-	user, err := auth.AuthRepository.Login(ctx, tx, request.Email)
-	if err != nil || user == nil || !user.IsVerified || !user.IsActive {
-		return models.LoginResponse{}, err
+	user, err := auth.AuthRepository.Login(ctx, tx, request.Email, request.Password)
+	if err != nil {
+		return map[string]interface{}{
+			"message": err.Error(),
+		}, err
 	}
-
 	err = utils.VerifyPassword(user.Password, request.Password)
 
 	if err != nil {
-		return models.LoginResponse{}, errors.New("invalid password")
+		fmt.Println("Error verifying password:", err) // Tambahkan ini
+		return map[string]interface{}{
+			"message": "error verifikasi password",
+		}, err
 	}
 
 	config, _ := initializers.LoadConfig(".")
@@ -69,18 +72,20 @@ func (auth *AuthServiceImpl) Login(ctx context.Context, request models.LoginInpu
 		"email":      user.Email,
 		"first_name": user.FirstName,
 		"last_name":  user.LastName,
+		"firs_user":  user.FirstUser,
 	}
 
 	token, err := utils.GenerateToken(config.TokenExpiresIn, tokenPayload, config.TokenSecret)
 	if err != nil {
-		return models.LoginResponse{}, err
+		fmt.Println("Error generating token:", err) // Tambahkan ini
+		return map[string]interface{}{
+			"message": "error generate token",
+		}, err
 	}
 
-	return models.LoginResponse{
-		Email:     user.Email,
-		FirstUser: user.FirstUser,
-		TokenType: "Bearer",
-		Token:     token,
+	return map[string]interface{}{
+		"TokenType": "Bearer",
+		"Token":     token,
 	}, nil
 }
 
@@ -201,5 +206,6 @@ func (auth *AuthServiceImpl) VerifyEmail(ctx context.Context, request models.Ver
 		RoleID:    user.RoleID,
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
+		FirstUser: user.FirstUser,
 	}, nil
 }

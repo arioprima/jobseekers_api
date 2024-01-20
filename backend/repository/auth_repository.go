@@ -7,10 +7,11 @@ import (
 	"log"
 
 	"github.com/arioprima/jobseeker/tree/main/backend/models"
+	"github.com/arioprima/jobseeker/tree/main/backend/utils"
 )
 
 type AuthRepository interface {
-	Login(ctx context.Context, tx *sql.Tx, email string) (*models.User, error)
+	Login(ctx context.Context, tx *sql.Tx, email, password string) (*models.User, error)
 	Register(ctx context.Context, tx *sql.Tx, user *models.User) (*models.User, error)
 	VerifyEmail(ctx context.Context, tx *sql.Tx, otpCode string) (*models.User, error)
 	UpdateUserVerificationStatus(ctx context.Context, tx *sql.Tx, email, token string) error
@@ -24,9 +25,9 @@ func NewAuthRepositoryImpl(db *sql.DB) AuthRepository {
 	return &authRepositoryImpl{DB: db}
 }
 
-func (auth *authRepositoryImpl) Login(ctx context.Context, tx *sql.Tx, email string) (*models.User, error) {
+func (auth *authRepositoryImpl) Login(ctx context.Context, tx *sql.Tx, email, password string) (*models.User, error) {
 	//TODO implement me
-	SQL := `SELECT * FROM users WHERE email = ? and is_verified = true and is_active = true`
+	SQL := `SELECT * FROM users WHERE email = ?`
 	row := tx.QueryRowContext(ctx, SQL, email)
 
 	var user models.User
@@ -47,9 +48,27 @@ func (auth *authRepositoryImpl) Login(ctx context.Context, tx *sql.Tx, email str
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
+			return nil, errors.New("email is not registered")
 		}
 		return nil, err
+	}
+
+	err = utils.VerifyPassword(user.Password, password)
+	if err != nil {
+		// log.Printf("Error verifying password: %v", err)
+		return nil, errors.New("password is wrong")
+	}
+
+	if !user.IsActive {
+		return nil, errors.New("your account is not active")
+	}
+
+	if !user.IsVerified {
+		return nil, errors.New("your account is not verified")
+	}
+
+	if !user.FirstUser {
+		return nil, errors.New("your account is not first user")
 	}
 
 	return &user, nil
@@ -145,7 +164,6 @@ func (auth *authRepositoryImpl) UpdateUserVerificationStatus(ctx context.Context
 	log.Printf("Rows affected: %d", rowsAffected)
 
 	if rowsAffected == 0 {
-		log.Println("No rows updated")
 		return errors.New("no rows updated")
 	}
 

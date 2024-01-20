@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -30,7 +31,7 @@ func (controller *AuthController) Login(ctx *gin.Context) {
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
 			"Status":  http.StatusInternalServerError,
-			"Message": "Internal Server Error",
+			"Message": fmt.Sprintf("%v", err),
 		})
 		return
 	} else {
@@ -76,7 +77,7 @@ func (controller *AuthController) VerifyEmail(ctx *gin.Context) {
 	verifyResponse, err := controller.AuthService.VerifyEmail(ctx, verifyRequest)
 	if err != nil {
 		log.Printf("Error verifying email: %v", err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Code OTP is invalid", "status": http.StatusInternalServerError})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf("%v", err), "status": http.StatusInternalServerError})
 		return
 	}
 
