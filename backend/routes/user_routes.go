@@ -15,6 +15,7 @@ func UserRouter(authController *controller.AuthController, adminController *cont
 	router.POST("/auth/verify-email", authController.VerifyEmail)
 
 	router.POST("/admin/save", adminController.Save)
+	router.POST("/admin/update", adminController.Update)
 
 	return service
 }

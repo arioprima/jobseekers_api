@@ -24,7 +24,7 @@ func (controller *AdminController) Save(ctx *gin.Context) {
 		return
 	}
 
-	registerResponse, err := controller.AdminService.Save(ctx, registerRequest)
+	saveResponse, err := controller.AdminService.Save(ctx, registerRequest)
 
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
@@ -35,7 +35,31 @@ func (controller *AdminController) Save(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusOK, gin.H{
 			"status":  http.StatusOK,
 			"message": "Success",
-			"data":    registerResponse,
+			"data":    saveResponse,
+		})
+	}
+}
+
+func (controller *AdminController) Update(ctx *gin.Context) {
+	registerRequest := models.AdminInput{}
+	err := ctx.ShouldBindJSON(&registerRequest)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	updateResponse, err := controller.AdminService.Update(ctx, registerRequest)
+
+	if err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"message": fmt.Sprintf("%v", err),
+		})
+	} else {
+		ctx.IndentedJSON(http.StatusOK, gin.H{
+			"status":  http.StatusOK,
+			"message": "Success",
+			"data":    updateResponse,
 		})
 	}
 }
