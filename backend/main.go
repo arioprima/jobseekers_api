@@ -29,7 +29,13 @@ func main() {
 	authService := service.NewAuthServiceImpl(authRepository, db, validate)
 	authController := controller.NewAuthController(authService)
 
-	router := routes.UserRouter(authController)
+	//admin
+	adminRepository := repository.NewAdminRepositoryImpl(db)
+	adminService := service.NewAdminServiceImpl(adminRepository, db, validate)
+	adminController := controller.NewAdminController(adminService)
+
+	router := routes.UserRouter(authController, adminController)
+
 	err = router.Run(":8080")
 	if err != nil {
 		log.Println("Run router error", err)
