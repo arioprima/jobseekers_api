@@ -70,7 +70,6 @@ func (adminService *AdminServiceImpl) Save(ctx context.Context, request models.A
 	}
 
 	return map[string]interface{}{
-		"message": "success",
-		"user":    user,
+		"user": user,
 	}, nil
 }
