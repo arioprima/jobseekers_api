@@ -72,6 +72,7 @@ func (auth *AuthServiceImpl) Login(ctx context.Context, request models.LoginInpu
 		"first_name": user.FirstName,
 		"last_name":  user.LastName,
 		"firs_user":  user.FirstUser,
+		"role_id":    user.RoleID,
 	}
 
 	token, err := utils.GenerateToken(config.TokenExpiresIn, tokenPayload, config.TokenSecret)
