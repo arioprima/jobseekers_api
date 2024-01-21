@@ -63,3 +63,27 @@ func (controller *AdminController) Update(ctx *gin.Context) {
 		})
 	}
 }
+
+func (controller *AdminController) Delete(ctx *gin.Context) {
+	deleteRequest := models.User{}
+	err := ctx.ShouldBindJSON(&deleteRequest)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	deleteResponse, err := controller.AdminService.Delete(ctx, deleteRequest)
+
+	if err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"message": fmt.Sprintf("%v", err),
+		})
+	} else {
+		ctx.IndentedJSON(http.StatusOK, gin.H{
+			"status":  http.StatusOK,
+			"message": "Success",
+			"data":    deleteResponse,
+		})
+	}
+}
