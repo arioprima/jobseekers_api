@@ -16,6 +16,7 @@ func UserRouter(authController *controller.AuthController, adminController *cont
 
 	router.POST("/admin/save", adminController.Save)
 	router.POST("/admin/update", adminController.Update)
+	router.POST("/admin/delete", adminController.Delete)
 
 	return service
 }
