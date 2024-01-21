@@ -112,7 +112,35 @@ func (adminUser *adminRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, ad
 
 func (adminUser *adminRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, userID string) error {
 	//TODO implement me
-	panic("implement me")
+	if userID == "" {
+		return errors.New("user id is empty")
+	}
+
+	var userExists bool
+	SQL := "SELECT EXISTS (SELECT 1 FROM users WHERE id = ?)"
+	err := tx.QueryRowContext(ctx, SQL, userID).Scan(&userExists)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if !userExists {
+		tx.Rollback()
+		return errors.New("user not found")
+	}
+
+	SQL = "UPDATE users SET is_active = false WHERE id = ?"
+	_, err = tx.ExecContext(ctx, SQL, userID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (adminUser *adminRepositoryImpl) FindByID(ctx context.Context, tx *sql.Tx, userID string) (*models.AdminUser, error) {
