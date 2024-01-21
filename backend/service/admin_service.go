@@ -14,6 +14,7 @@ import (
 type AdminService interface {
 	Save(ctx context.Context, request models.AdminInput) (map[string]interface{}, error)
 	Update(ctx context.Context, request models.AdminInput) (map[string]interface{}, error)
+	Delete(ctx context.Context, request models.User) (map[string]interface{}, error)
 }
 
 type AdminServiceImpl struct {
@@ -143,5 +144,41 @@ func (adminService *AdminServiceImpl) Update(ctx context.Context, request models
 
 	return map[string]interface{}{
 		"user": user,
+	}, nil
+}
+
+func (adminService *AdminServiceImpl) Delete(ctx context.Context, request models.User) (map[string]interface{}, error) {
+	//TODO implement me
+	tx, err := adminService.DB.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			// Terjadi kesalahan, rollback transaksi
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				log.Printf("Kesalahan rollback transaksi: %v", rollbackErr)
+			}
+			log.Printf("Panic terjadi: %v", r)
+		} else {
+			// Tidak ada kesalahan, commit transaksi
+			if commitErr := tx.Commit(); commitErr != nil {
+				log.Printf("Kesalahan commit transaksi: %v", commitErr)
+				// Jika terjadi kesalahan commit, rollback transaksi
+				if rollbackErr := tx.Rollback(); rollbackErr != nil {
+					log.Printf("Kesalahan rollback transaksi setelah kesalahan commit: %v", rollbackErr)
+				}
+			}
+		}
+	}()
+
+	err = adminService.AdminRepository.Delete(ctx, tx, request.UserID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return map[string]interface{}{
+		"user": "user with id " + request.UserID + " has been deleted",
 	}, nil
 }
