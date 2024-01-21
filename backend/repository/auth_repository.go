@@ -67,10 +67,6 @@ func (auth *authRepositoryImpl) Login(ctx context.Context, tx *sql.Tx, email, pa
 		return nil, errors.New("your account is not verified")
 	}
 
-	if !user.FirstUser {
-		return nil, errors.New("your account is not first user")
-	}
-
 	return &user, nil
 }
 

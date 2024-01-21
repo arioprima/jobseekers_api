@@ -5,14 +5,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func UserRouter(authController *controller.AuthController) *gin.Engine {
+func UserRouter(authController *controller.AuthController, adminController *controller.AdminController) *gin.Engine {
 	service := gin.Default()
 
-	router := service.Group("/api/auth")
+	router := service.Group("/api")
 
-	router.POST("/login", authController.Login)
-	router.POST("/register", authController.Register)
-	router.POST("/verify-email", authController.VerifyEmail)
+	router.POST("/auth/login", authController.Login)
+	router.POST("/auth/register", authController.Register)
+	router.POST("/auth/verify-email", authController.VerifyEmail)
+
+	router.POST("/admin/save", adminController.Save)
 
 	return service
 }
