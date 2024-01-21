@@ -70,12 +70,77 @@ func (adminUser *adminRepositoryImpl) Save(ctx context.Context, tx *sql.Tx, admi
 
 func (adminUser *adminRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, admin *models.AdminUser) (*models.AdminUser, error) {
 	//TODO implement me
-	panic("implement me")
+	if admin.UserID == "" {
+		return nil, errors.New("user id is empty")
+	}
+
+	var userExists bool
+	SQL := "SELECT EXISTS (SELECT 1 FROM users WHERE id = ?)"
+	err := tx.QueryRowContext(ctx, SQL, admin.UserID).Scan(&userExists)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	if !userExists {
+		tx.Rollback()
+		return nil, errors.New("user not found")
+	}
+
+	SQL = "UPDATE admin SET birth_place = ?, date_of_birth = ?, phone = ?, address = ?, updated_at = ? WHERE user_id = ?"
+	_, err = tx.ExecContext(ctx, SQL, admin.BirthPlace, admin.BirthDate, admin.Phone, admin.Address, admin.UpdatedAt, admin.UserID)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	SQL = "UPDATE users SET first_name = ?, last_name = ?, updated_at = ? WHERE id = ?"
+	_, err = tx.ExecContext(ctx, SQL, admin.FirstName, admin.LastName, admin.UpdatedAt, admin.UserID)
+
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	return admin, nil
+
 }
 
 func (adminUser *adminRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, userID string) error {
 	//TODO implement me
-	panic("implement me")
+	if userID == "" {
+		return errors.New("user id is empty")
+	}
+
+	var userExists bool
+	SQL := "SELECT EXISTS (SELECT 1 FROM users WHERE id = ?)"
+	err := tx.QueryRowContext(ctx, SQL, userID).Scan(&userExists)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if !userExists {
+		tx.Rollback()
+		return errors.New("user not found")
+	}
+
+	SQL = "UPDATE users SET is_active = false WHERE id = ?"
+	_, err = tx.ExecContext(ctx, SQL, userID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (adminUser *adminRepositoryImpl) FindByID(ctx context.Context, tx *sql.Tx, userID string) (*models.AdminUser, error) {

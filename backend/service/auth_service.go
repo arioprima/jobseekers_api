@@ -125,6 +125,13 @@ func (auth *AuthServiceImpl) Register(ctx context.Context, request models.Regist
 	}
 
 	now := time.Now()
+	formattedNow := now.Format("2006-01-02 15:04:05")
+
+	// Parse waktu yang telah diformat menjadi objek time.Time
+	parsedTime, err := time.Parse("2006-01-02 15:04:05", formattedNow)
+	if err != nil {
+		return "", fmt.Errorf("kesalahan parsing waktu: %v", err)
+	}
 	newUser := models.User{
 		UserID:     utils.GenerateUUID(),
 		FirstName:  request.FirstName,
@@ -135,7 +142,7 @@ func (auth *AuthServiceImpl) Register(ctx context.Context, request models.Regist
 		IsActive:   true,
 		IsVerified: false,
 		RoleID:     request.RoleID,
-		CreatedAt:  now,
+		CreatedAt:  parsedTime,
 	}
 
 	otp := utils.GenerateOTP()

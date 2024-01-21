@@ -19,6 +19,8 @@ type User struct {
 
 type AdminUser struct {
 	AdminID    string    `json:"id"`
+	FirstName  string    `json:"first_name"`
+	LastName   string    `json:"last_name"`
 	BirthPlace string    `json:"birth_place"`
 	BirthDate  string    `json:"date_of_birth"`
 	Phone      string    `json:"phone"`
@@ -47,6 +49,8 @@ type JobSeekerUser struct {
 }
 
 type AdminInput struct {
+	FirstName  string `json:"first_name"`
+	LastName   string `json:"last_name"`
 	BirthPlace string `json:"birth_place"`
 	BirthDate  string `json:"date_of_birth"`
 	Phone      string `json:"phone"`
