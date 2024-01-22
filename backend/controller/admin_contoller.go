@@ -87,3 +87,27 @@ func (controller *AdminController) Delete(ctx *gin.Context) {
 		})
 	}
 }
+
+func (controller *AdminController) FindByID(ctx *gin.Context) {
+	findByIDRequest := models.User{}
+	err := ctx.ShouldBindJSON(&findByIDRequest)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	findByIDResponse, err := controller.AdminService.FindByID(ctx, findByIDRequest)
+
+	if err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"message": fmt.Sprintf("%v", err),
+		})
+	} else {
+		ctx.IndentedJSON(http.StatusOK, gin.H{
+			"status":  http.StatusOK,
+			"message": "Success",
+			"data":    findByIDResponse,
+		})
+	}
+}
