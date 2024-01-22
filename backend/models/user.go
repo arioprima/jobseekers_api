@@ -21,11 +21,13 @@ type AdminUser struct {
 	AdminID    string    `json:"id"`
 	FirstName  string    `json:"first_name"`
 	LastName   string    `json:"last_name"`
+	Email      string    `json:"email"`
 	BirthPlace string    `json:"birth_place"`
 	BirthDate  string    `json:"date_of_birth"`
 	Phone      string    `json:"phone"`
 	Address    string    `json:"address"`
 	UserID     string    `json:"user_id" validate:"required"`
+	RoleID     string    `json:"role_id"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 }

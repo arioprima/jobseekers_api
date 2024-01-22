@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-
 	"github.com/arioprima/jobseeker/tree/main/backend/models"
 )
 
@@ -144,8 +143,49 @@ func (adminUser *adminRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, us
 }
 
 func (adminUser *adminRepositoryImpl) FindByID(ctx context.Context, tx *sql.Tx, userID string) (*models.AdminUser, error) {
-	//TODO implement me
-	panic("implement me")
+	// TODO implement me
+	if userID == "" {
+		return nil, errors.New("user id is empty")
+	}
+
+	var userExists bool
+	SQL := "SELECT EXISTS (SELECT 1 FROM users WHERE id = ?)"
+	err := tx.QueryRowContext(ctx, SQL, userID).Scan(&userExists)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	if !userExists {
+		tx.Rollback()
+		return nil, errors.New("user not found")
+	}
+
+	// Adjust the SQL query to select only the necessary columns
+	SQL = "SELECT admin.*, users.first_name, users.last_name, users.email, users.role_id FROM admin INNER JOIN users ON admin.user_id = users.id WHERE admin.user_id = ?"
+	row := tx.QueryRowContext(ctx, SQL, userID)
+
+	var user models.AdminUser
+	err = row.Scan(
+		&user.AdminID,
+		&user.BirthPlace,
+		&user.BirthDate,
+		&user.Phone,
+		&user.Address,
+		&user.UserID,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+		&user.FirstName,
+		&user.LastName,
+		&user.Email,
+		&user.RoleID,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
 
 func (adminUser *adminRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) ([]*models.AdminUser, error) {
