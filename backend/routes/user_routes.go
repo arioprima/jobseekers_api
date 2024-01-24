@@ -2,11 +2,13 @@ package routes
 
 import (
 	"github.com/arioprima/jobseeker/tree/main/backend/controller"
+	"github.com/arioprima/jobseeker/tree/main/backend/middleware"
 	"github.com/gin-gonic/gin"
 )
 
 func UserRouter(authController *controller.AuthController, adminController *controller.AdminController) *gin.Engine {
 	service := gin.Default()
+	middleware.SetupCorsMiddleware(service)
 
 	router := service.Group("/api")
 

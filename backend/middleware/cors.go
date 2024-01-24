@@ -9,13 +9,13 @@ import (
 
 func SetupCorsMiddleware(router *gin.Engine) {
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:8080"}
+	config.AllowOrigins = []string{"http://localhost:5173"}
 	config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE"}
 	config.AllowHeaders = []string{"Origin", "Content-Type"}
 	config.ExposeHeaders = []string{"Content-Length"}
 	config.AllowCredentials = true
 	config.AllowOriginFunc = func(origin string) bool {
-		return origin == "http://localhost:3000"
+		return origin == "http://localhost:5173"
 	}
 	config.MaxAge = 12 * time.Hour
 
