@@ -1,6 +1,48 @@
-import React from 'react'
+import React, { useState } from 'react'
 import jobImage from '.././../assets/istockphoto-1198240109-1024x1024.jpg'
-const Login = () => {
+import { apiLogin } from '../../Service/api'
+
+interface LoginData {
+  email: string
+  password: string
+
+}
+
+const Login: React.FC = () => {
+  const [loginData, setLoginData] = useState<LoginData>({
+    email: '',
+    password: ''
+  })
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setLoginData((prevData) => ({ ...prevData, [name]: value }));
+  }
+  
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const response = await apiLogin(loginData);
+      console.log(response);
+      if (response.status === 200) {
+        alert('Login Success');
+      } else  {
+        alert('Login Failed');
+      }
+    } catch (err: any) {
+      console.log(err);
+      if (typeof err === 'string' && err.includes('"message":"password is wrong"')) {
+        alert("password is wrong");
+      } else {
+        alert('Login Failed with unknown error');
+      }
+    }
+  }
+  
+  
+  
+
   return (
     <div>
       <div className="flex justify-center items-center h-screen">
@@ -18,19 +60,25 @@ const Login = () => {
           {/* kanan */}
           <div className="flex flex-col justify-center items-center w-1/2">
             <h1 className='mb-4 text-2xl font-semibold text-gray-800'>Login</h1>
+            <form onSubmit={handleSubmit}>
             <input
               type="email"
+              name='email'
               placeholder="Email"
               className="w-72 p-2 mb-4 rounded border-b border-gray-300 focus:outline-none focus:border-blue-500"
+              onChange={handleInputChange}
             />
             <input
               type="password"
+              name='password'
               placeholder="Password"
               className="w-72 p-2 mb-4 rounded border-b border-gray-300 focus:outline-none focus:border-blue-500"
+              onChange={handleInputChange}
             />
              <button className="w-72 bg-blue-500 text-white  py-2 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600">
                 Login
               </button>
+            </form>
           </div>
       </div>
       </div>
