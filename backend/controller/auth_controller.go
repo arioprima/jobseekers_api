@@ -28,8 +28,8 @@ func (controller *AuthController) Login(ctx *gin.Context) {
 	loginResponse, err := controller.AuthService.Login(ctx, loginRequest)
 
 	if err != nil {
-		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
-			"status":  http.StatusInternalServerError,
+		ctx.IndentedJSON(http.StatusUnauthorized, gin.H{
+			"status":  http.StatusUnauthorized,
 			"message": fmt.Sprintf("%v", err),
 		})
 		return
