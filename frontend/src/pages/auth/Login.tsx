@@ -28,15 +28,11 @@ const Login: React.FC = () => {
       if (response.status === 200) {
         alert('Login Success');
       } else  {
-        alert('Login Failed');
+        setLoginData((prevData)=>({...prevData, password: ''}))
+        alert(response.message);
       }
-    } catch (err: any) {
+    } catch (err) {
       console.log(err);
-      if (typeof err === 'string' && err.includes('"message":"password is wrong"')) {
-        alert("password is wrong");
-      } else {
-        alert('Login Failed with unknown error');
-      }
     }
   }
   
@@ -73,6 +69,7 @@ const Login: React.FC = () => {
               name='password'
               placeholder="Password"
               className="w-72 p-2 mb-4 rounded border-b border-gray-300 focus:outline-none focus:border-blue-500"
+              value={loginData.password}
               onChange={handleInputChange}
             />
              <button className="w-72 bg-blue-500 text-white  py-2 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600">

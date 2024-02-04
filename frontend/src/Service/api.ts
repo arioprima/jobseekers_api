@@ -1,7 +1,7 @@
 import axios from "axios";
 import { webserviceUrl } from "./baseUrl";
 
-export const apiLogin = async (loginData: Object) => {
+export const apiLogin = async (loginData: any) => {
   const apiUrl = `${webserviceUrl}auth/login`;
   try {
     const response = await axios.post(apiUrl, loginData, {
@@ -11,11 +11,11 @@ export const apiLogin = async (loginData: Object) => {
     });
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-        const errorMessage = JSON.stringify(error.response?.data);
-        throw errorMessage
-      } else {
-        throw error;
-      }
+    if (error.response && error.response.data) {
+      return error.response.data;
+    } else {
+      throw error;
+      
+    }
   }
 };
