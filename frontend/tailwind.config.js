@@ -5,9 +5,14 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    container: {
+      center: true,
+      padding: "10px",
+    },
     extend: {
       colors: {
-        primary: "#334155"
+        primary: "#334155",
+        secondary: "#475569",
       }
     },
   },
