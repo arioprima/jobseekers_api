@@ -1,8 +1,19 @@
 import { useEffect, useState } from "react";
 
+interface Link {
+  name: string;
+  url: string;
+}
+
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const links: Link[] = [
+    { name: "Tentang", url: "/tentang" },
+    { name: "Mitra", url: "/mitra" },
+    { name: "Hubungi", url: "/hubungi" },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,38 +34,77 @@ const Navbar = () => {
   };
 
   return (
-    <div className={`flex items-center justify-center w-full ${isScrolled ? 'bg-white bg-opacity-80 fixed top-0 left-0 z-50 navbar-fixed' : 'bg-transparent absolute top-0 left-0 z-10'}`}>
+    <div
+      className={`flex items-center justify-center w-full ${
+        isScrolled
+          ? "bg-white bg-opacity-80 fixed top-0 left-0 z-50 navbar-fixed"
+          : "bg-transparent absolute top-0 left-0 z-10"
+      }`}
+    >
       <div className="container">
-        <div className="flex items-center py-4 justify-between relative">
-          <div className="flex items-center px-4">
-            <button
-              id="hamburger"
-              name="hamburger"
-              className="block absolute left-4"
-              onClick={handleMenu}
-            >
-              <span
+        <div className="flex items-center py-1 justify-between relative">
+          <div className="flex flex-row py-4 lg:flex-row-reverse lg:justify-between lg:py-2 w-full justify-center">
+            <div className="flex items-center px-4">
+              <button
+                id="hamburger"
+                name="hamburger"
+                className="block absolute left-4 lg:hidden"
+                onClick={handleMenu}
+              >
+                <span
+                  className={
+                    isMenuOpen
+                      ? "hamburger-active"
+                      : "hamburger-line origin-top-left"
+                  }
+                ></span>
+                <span
+                  className={isMenuOpen ? "hamburger-active" : "hamburger-line"}
+                ></span>
+                <span
+                  className={
+                    isMenuOpen
+                      ? "hamburger-active "
+                      : "hamburger-line origin-bottom-left"
+                  }
+                ></span>
+              </button>
+              <nav
+                id="nav-menu"
                 className={
                   isMenuOpen
-                    ? "hamburger-active"
-                    : "hamburger-line origin-top-left"
+                    ? "bg-white absolute py-5 shadow-lg rounded-lg max-w-[150px] w-full left-4 top-full"
+                    : "hidden lg:block lg:static bg-transparent lg:max-w-full lg:shadow-none lg:rounded-none"
                 }
-              ></span>
-              <span
-                className={isMenuOpen ? "hamburger-active" : "hamburger-line"}
-              ></span>
-              <span
-                className={
-                  isMenuOpen
-                    ? "hamburger-active "
-                    : "hamburger-line origin-bottom-left"
-                }
-              ></span>
-            </button>
+              >
+                <ul className="block lg:flex lg:gap-5">
+                  {links.map((link, index) => (
+                    <li key={index} className="group">
+                      <a
+                        href={link.url}
+                        className="text-base text-black py-2 flex group-hover:text-sky-500"
+                      >
+                        {link.name}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </div>
+            <div className="pl-8 lg:pt-1.5">
+              <a href="#home" className="font-bold text-lg text-black">
+                Jobseekers
+              </a>
+            </div>
           </div>
-          <div className="px-4">
-            <a href="#home" className="font-bold text-lg text-black">
-              Jobseekers
+          <div className="pl-4 pt-1 lg:pt-0">
+            <a
+              href="jobseekers/login"
+              className="text-base font-semibold text-md text-white bg-sky-500 py-3 px-3 rounded-xl
+                hover:shadow-lg hover:opacity-85 transition duration-300 ease-in-out
+                "
+            >
+              Masuk
             </a>
           </div>
         </div>
