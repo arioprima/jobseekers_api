@@ -1,19 +1,11 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-// import Home from './pages/home/Home';
-import Login from './pages/auth/Login';
-import Register from './pages/auth/Register';
-import LandingPage from './pages/LandingPage/LandingPage'
-
+import { BrowserRouter as Router } from "react-router-dom";
+import Routes from "./routes/routes";
 function App() {
   return (
-    <Router basename='/jobseekers'>
-    <Routes>
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-    </Routes>
-  </Router>
+    <Router basename="/jobseekers">
+      <Routes />
+    </Router>
   );
 }
 
-export default App
+export default App;
