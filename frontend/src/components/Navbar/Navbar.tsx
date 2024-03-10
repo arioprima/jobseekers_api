@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface Link {
   name: string;
@@ -8,6 +9,7 @@ interface Link {
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const links: Link[] = [
     { name: "Tentang", url: "/tentang" },
@@ -81,8 +83,8 @@ const Navbar = () => {
                   {links.map((link, index) => (
                     <li key={index} className="group">
                       <a
-                        href={link.url}
-                        className="text-base text-black py-2 flex group-hover:text-sky-500"
+                       onClick={() => navigate(link.url)}
+                        className="text-base text-black py-2 flex group-hover:text-sky-500 hover:cursor-pointer"
                       >
                         {link.name}
                       </a>
@@ -92,15 +94,15 @@ const Navbar = () => {
               </nav>
             </div>
             <div className="pl-8 lg:pt-1.5">
-              <a href="#home" className="font-bold text-lg text-black">
+              <a onClick={() => navigate("/")} className="font-bold text-2xl text-black hover:cursor-pointer">
                 Jobseekers
               </a>
             </div>
           </div>
-          <div className="pl-4 pt-1 lg:pt-0">
+          <div className="pl-4 pt-1 lg:pt-0 hover:cursor-pointer">
             <a
-              href="jobseekers/login"
-              className="text-base font-semibold text-md text-white bg-sky-500 py-3 px-3 rounded-xl
+                onClick={() => navigate("/login")}
+              className="text-base font-semibold text-md text-white bg-green-500 py-3 px-3 rounded-xl
                 hover:shadow-lg hover:opacity-85 transition duration-300 ease-in-out
                 "
             >
