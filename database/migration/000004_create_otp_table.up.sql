@@ -4,7 +4,7 @@ create table if not exists otp_code(
     code varchar(100),
     expired_at timestamp,
     created_at timestamp default current_timestamp,
-    updated_at timestamp default current_timestamp on update current_timestamp,
+    updated_at timestamp default current_timestamp,
     deleted_at timestamp default null,
     foreign key (user_id) references users(id)
 );

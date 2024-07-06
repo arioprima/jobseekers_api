@@ -12,6 +12,6 @@ create table if not exists biodata(
     address varchar(100),
     education_id varchar(36),
     created_at timestamp default current_timestamp,
-    updated_at timestamp default current_timestamp on update current_timestamp,
+    updated_at timestamp default current_timestamp,
     deleted_at timestamp default null
 );

@@ -7,6 +7,6 @@ create table if not exists certification(
     description text,
     certificate_image varchar(255),
     created_at timestamp default current_timestamp,
-    updated_at timestamp default current_timestamp on update current_timestamp,
+    updated_at timestamp default current_timestamp,
     deleted_at timestamp default null
 );

@@ -4,6 +4,6 @@ create table if not exists education(
     institution varchar(100),
     graduated_at date,
     created_at timestamp default current_timestamp,
-    updated_at timestamp default current_timestamp on update current_timestamp
+    updated_at timestamp default current_timestamp,
     deleted_at timestamp default null
 );
