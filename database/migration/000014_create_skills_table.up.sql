@@ -1,0 +1,9 @@
+create table if not exists skills(
+    id varchar(36) primary key,
+    skill varchar(100),
+    user_id varchar(36),
+    created_at timestamp default current_timestamp,
+    updated_at timestamp default current_timestamp on update current_timestamp,
+    deleted_at timestamp default null,
+    foreign key(user_id) references users(id)
+);
