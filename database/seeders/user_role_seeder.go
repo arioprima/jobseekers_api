@@ -22,7 +22,7 @@ func SeedRole(db *gorm.DB) {
 			UpdatedAt: time.Now(),
 		},
 		{
-			ID:        "019047ca-f542-71fe-9de6-c4919ed5c9ff",
+			ID:        "01908d0f-289d-7fd7-9143-d9525f8bc74d",
 			Name:      "user",
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
