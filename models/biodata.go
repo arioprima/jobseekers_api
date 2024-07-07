@@ -7,7 +7,7 @@ type Biodata struct {
 	Firstname   string    `json:"firstname" validate:"required"`
 	Lastname    string    `json:"lastname,omitempty"`
 	Email       string    `json:"email" validate:"required,email"`
-	BirthDate   string    `json:"birth_date,omitempty"`
+	BirthDate   time.Time `json:"birth_date,omitempty"`
 	BirthPlace  string    `json:"birth_place,omitempty"`
 	Phone       string    `json:"phone,omitempty"`
 	ProvinceId  string    `json:"province_id,omitempty" gorm:"column:province_id"`
