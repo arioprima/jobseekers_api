@@ -4,7 +4,7 @@ import "time"
 
 type User struct {
 	ID           string    `json:"id" validate:"uuid"`
-	BiodataId    string    `json:"biodata_id" validate:"required,uuid" gore:"column:biodata_id"`
+	BiodataId    string    `json:"biodata_id" validate:"required,uuid" gorm:"column:biodata_id"`
 	Password     string    `json:"password" validate:"required"`
 	IsActive     bool      `json:"is_active,omitempty" gorm:"default:true"`
 	IsVerified   bool      `json:"is_verified,omitempty"  gorm:"default:false"`
