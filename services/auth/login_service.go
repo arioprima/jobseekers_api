@@ -41,14 +41,19 @@ func (s *serviceLoginImpl) LoginService(ctx context.Context, tx *gorm.DB, input 
 		return nil, err
 	}
 
+	if res.ProfileImage != nil && *res.ProfileImage == "" {
+		res.ProfileImage = nil
+	}
+
 	configs, _ := config.LoadConfig(".")
 	accessTokenData := map[string]interface{}{
-		"id":        res.ID,
-		"email":     res.Biodata.Email,
-		"firstname": res.Biodata.Firstname,
-		"lastname":  res.Biodata.Lastname,
-		"role_id":   res.Role.ID,
-		"role_name": res.Role.Name,
+		"id":            res.ID,
+		"email":         res.Biodata.Email,
+		"firstname":     res.Biodata.Firstname,
+		"lastname":      res.Biodata.Lastname,
+		"role_id":       res.Role.ID,
+		"role_name":     res.Role.Name,
+		"profile_image": res.ProfileImage,
 	}
 
 	accessToken, tokenErr := pkg.GenerateToken(accessTokenData, configs.TokenSecret, configs.TokenExpired)
