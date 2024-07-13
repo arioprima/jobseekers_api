@@ -73,14 +73,15 @@ func (h *HandlerLogin) LoginHandler(ctx *gin.Context) {
 	}
 
 	resData := schemas.LoginUserResponse{
-		ID:        res.ID,
-		Firstname: res.Biodata.Firstname,
-		Lastname:  res.Biodata.Lastname,
-		Email:     res.Biodata.Email,
-		RoleId:    res.RoleId,
-		RoleName:  res.Role.Name,
-		CreatedAt: res.CreatedAt,
-		UpdatedAt: res.UpdatedAt,
+		ID:           res.ID,
+		Firstname:    res.Biodata.Firstname,
+		Lastname:     res.Biodata.Lastname,
+		Email:        res.Biodata.Email,
+		RoleId:       res.RoleId,
+		RoleName:     res.Role.Name,
+		ProfileImage: res.ProfileImage,
+		CreatedAt:    res.CreatedAt,
+		UpdatedAt:    res.UpdatedAt,
 	}
 	helpers.ApiResponse(ctx, http.StatusOK, "success", "Login successfully", resData, res.Auth)
 }

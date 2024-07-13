@@ -15,7 +15,7 @@ type ModelAuth struct {
 	Password     string    `json:"password,omitempty" gorm:"column:password;type:varchar(255)"`
 	IsActive     bool      `json:"is_active,omitempty" gorm:"column:is_active;default:true"`
 	IsVerified   bool      `json:"is_verified,omitempty" gorm:"column:is_verified;default:false"`
-	ProfileImage string    `json:"profile_image,omitempty" gorm:"column:profile_image"`
+	ProfileImage *string   `json:"profile_image,omitempty" gorm:"column:profile_image"`
 	RoleId       string    `json:"role_id,omitempty" gorm:"column:role_id"`
 	Role         UserRole  `json:"role,omitempty" gorm:"foreignKey:RoleId;references:ID"`
 	Summary      string    `json:"summary,omitempty" gorm:"column:summary"`

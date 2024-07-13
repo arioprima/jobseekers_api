@@ -25,12 +25,13 @@ type SchemaDataUser struct {
 }
 
 type LoginUserResponse struct {
-	ID        string    `json:"id"`
-	Firstname string    `json:"firstname"`
-	Lastname  string    `json:"lastname,omitempty"`
-	Email     string    `json:"email"`
-	RoleId    string    `json:"role_id"`
-	RoleName  string    `json:"role_name"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID           string    `json:"id"`
+	Firstname    string    `json:"firstname"`
+	Lastname     string    `json:"lastname,omitempty"`
+	Email        string    `json:"email"`
+	RoleId       string    `json:"role_id"`
+	RoleName     string    `json:"role_name"`
+	ProfileImage *string   `json:"profile_image"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
