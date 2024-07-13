@@ -2,13 +2,17 @@ package repositories
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
+	"github.com/arioprima/jobseekers_api/config"
 	"github.com/arioprima/jobseekers_api/models"
 	"github.com/arioprima/jobseekers_api/pkg"
 	"github.com/arioprima/jobseekers_api/schemas"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"net/http"
+	"time"
 )
 
 type RepositoryLogin interface {
@@ -71,6 +75,27 @@ func (r *repositoryLoginImpl) Login(ctx context.Context, tx *gorm.DB, req *schem
 		return nil, &schemas.SchemaDatabaseError{
 			Code: http.StatusUnauthorized,
 			Type: "error_03",
+		}
+	}
+
+	// Create user session
+	configs, _ := config.LoadConfig(".")
+	hashed := sha256.New()
+	hashed.Write([]byte(configs.TokenSecret + time.Now().String()))
+	token := hex.EncodeToString(hashed.Sum(nil))
+	user.Token = token
+
+	session := models.UserSession{
+		UserID:    user.ID,
+		Token:     token,
+		LastLogin: time.Now(),
+		ExpiredAt: pkg.CalculateExpiration(time.Now().Add(configs.TokenExpired).Unix()),
+	}
+
+	if err := tx.Create(&session).Error; err != nil {
+		return nil, &schemas.SchemaDatabaseError{
+			Code: http.StatusInternalServerError,
+			Type: "error_02",
 		}
 	}
 

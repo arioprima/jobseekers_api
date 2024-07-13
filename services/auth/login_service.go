@@ -54,6 +54,7 @@ func (s *serviceLoginImpl) LoginService(ctx context.Context, tx *gorm.DB, input 
 		"role_id":       res.Role.ID,
 		"role_name":     res.Role.Name,
 		"profile_image": res.ProfileImage,
+		"token":         res.Token,
 	}
 
 	accessToken, tokenErr := pkg.GenerateToken(accessTokenData, configs.TokenSecret, configs.TokenExpired)
