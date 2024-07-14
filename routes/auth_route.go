@@ -2,16 +2,17 @@ package routes
 
 import (
 	handlers "github.com/arioprima/jobseekers_api/handlers/auth"
-	"github.com/arioprima/jobseekers_api/middlewares"
 	repositories "github.com/arioprima/jobseekers_api/repositories/auth"
 	services "github.com/arioprima/jobseekers_api/services/auth"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type TestMiddleware struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Name2 string `json:"name2"`
 }
 
 func SetupAuthRoutes(route *gin.Engine, db *gorm.DB) {
@@ -21,15 +22,16 @@ func SetupAuthRoutes(route *gin.Engine, db *gorm.DB) {
 	loginHandler := handlers.NewHandlerLogin(loginService)
 
 	// Setup routes
-	groupRoute := route.Group("/api")
+	groupRoute := route.Group("/jobseeker-api/api")
 	groupRoute.POST("/login", loginHandler.LoginHandler)
 
-	user := TestMiddleware{
-		ID:   1,
-		Name: "Test Middleware",
+	user := &TestMiddleware{
+		ID:    1,
+		Name:  uuid.New().String(),
+		Name2: uuid.New().String(),
 	}
 
-	groupRoute.GET("/test", middlewares.AuthMiddleware(""), func(ctx *gin.Context) {
+	groupRoute.GET("/test", func(ctx *gin.Context) {
 		ctx.JSON(200, user)
 	})
 
