@@ -52,11 +52,14 @@ func (r *repositoryLoginImpl) Login(ctx context.Context, tx *gorm.DB, req *schem
 		}
 	}()
 
-	if err = tx.Joins("LEFT JOIN biodata ON users.biodata_id = biodata.id").
-		Joins("LEFT JOIN user_roles ON users.role_id = user_roles.id").
+	if err = tx.Joins("LEFT JOIN biodata b ON users.biodata_id = b.id").
+		Joins("LEFT JOIN user_roles ur ON users.role_id = ur.id").
 		Preload("Biodata").
 		Preload("Role").
-		Where("biodata.email = ?", req.Email).
+		Where("b.email = ?", req.Email).
+		Where("users.is_active = ?", true).
+		Where("users.is_verified = ?", true).
+		Where("users.deleted_at IS NULL").
 		First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &schemas.SchemaDatabaseError{
