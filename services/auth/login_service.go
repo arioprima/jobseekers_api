@@ -9,7 +9,6 @@ import (
 	"github.com/arioprima/jobseekers_api/schemas"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
-	"log"
 	"time"
 )
 
@@ -37,7 +36,6 @@ func (s *serviceLoginImpl) LoginService(ctx context.Context, tx *gorm.DB, input 
 
 	res, err := s.repository.Login(ctx, tx, &schema)
 	if err != nil {
-		log.Println("kirimErorkeHandler", err)
 		return nil, err
 	}
 

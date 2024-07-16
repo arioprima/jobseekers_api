@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/arioprima/jobseekers_api/config"
+	"github.com/arioprima/jobseekers_api/middlewares"
 	"github.com/arioprima/jobseekers_api/routes"
 	"github.com/gin-gonic/gin"
 )
@@ -18,7 +19,11 @@ func main() {
 	}
 	router := gin.Default()
 
-	routes.SetupAuthRoutes(router, db)
+	middlewares.SetupCorsMiddleware(router)
+
+	routeGroup := router.Group("/job-vacancies-api")
+
+	routes.SetupAuthRoutes(routeGroup, db)
 
 	port := loadConfig.PORT
 	err = router.Run(":" + port)

@@ -15,14 +15,14 @@ type TestMiddleware struct {
 	Name2 string `json:"name2"`
 }
 
-func SetupAuthRoutes(route *gin.Engine, db *gorm.DB) {
+func SetupAuthRoutes(route *gin.RouterGroup, db *gorm.DB) {
 	// Initialize dependencies
 	loginRepository := repositories.NewRepositoryLoginImpl(nil, db)
 	loginService := services.NewServiceLoginImpl(loginRepository, nil)
 	loginHandler := handlers.NewHandlerLogin(loginService)
 
 	// Setup routes
-	groupRoute := route.Group("/jobseeker-api/api")
+	groupRoute := route.Group("/api")
 	groupRoute.POST("/login", loginHandler.LoginHandler)
 
 	user := &TestMiddleware{
