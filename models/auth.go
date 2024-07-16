@@ -2,12 +2,6 @@ package models
 
 import "time"
 
-type Auth struct {
-	AccessToken string    `json:"token"`
-	Type        string    `json:"type"`
-	ExpiredAt   time.Time `json:"expired_at"`
-}
-
 type ModelAuth struct {
 	ID           string    `json:"id" gorm:"primaryKey;column:id"`
 	BiodataId    string    `json:"biodata_id,omitempty" gorm:"column:biodata_id"`
@@ -21,7 +15,6 @@ type ModelAuth struct {
 	Summary      string    `json:"summary,omitempty" gorm:"column:summary"`
 	CreatedAt    time.Time `json:"created_at" gorm:"column:created_at"`
 	UpdatedAt    time.Time `json:"updated_at" gorm:"column:updated_at"`
-	Auth         Auth      `json:"auth,omitempty" gorm:"-"`
 	Token        string    `json:"token,omitempty" gorm:"-"`
 }
 

@@ -1,12 +1,15 @@
 package handlers
 
 import (
+	"github.com/arioprima/jobseekers_api/config"
 	"github.com/arioprima/jobseekers_api/helpers"
+	"github.com/arioprima/jobseekers_api/models"
 	"github.com/arioprima/jobseekers_api/pkg"
 	"github.com/arioprima/jobseekers_api/schemas"
 	services "github.com/arioprima/jobseekers_api/services/auth"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"time"
 )
 
 type HandlerLogin struct {
@@ -18,6 +21,7 @@ func NewHandlerLogin(service services.ServiceLogin) *HandlerLogin {
 }
 
 func (h *HandlerLogin) LoginHandler(ctx *gin.Context) {
+	configs, _ := config.LoadConfig(".")
 	var loginRequest schemas.SchemaDataUser
 
 	if err := ctx.ShouldBindJSON(&loginRequest); err != nil {
@@ -56,6 +60,29 @@ func (h *HandlerLogin) LoginHandler(ctx *gin.Context) {
 
 	res, err := h.Service.LoginService(ctx, nil, &loginRequest)
 
+	if res.ProfileImage != nil && *res.ProfileImage == "" {
+		res.ProfileImage = nil
+	}
+
+	accessTokenData := map[string]interface{}{
+		"id":            res.ID,
+		"email":         res.Biodata.Email,
+		"firstname":     res.Biodata.Firstname,
+		"lastname":      res.Biodata.Lastname,
+		"role_id":       res.Role.ID,
+		"role_name":     res.Role.Name,
+		"profile_image": res.ProfileImage,
+		"token":         res.Token,
+	}
+
+	accessToken, _ := pkg.GenerateToken(accessTokenData, configs.TokenSecret, configs.TokenExpired)
+
+	authToken := models.TokenAuth{
+		AccessToken: accessToken,
+		Type:        "Bearer",
+		ExpiredAt:   pkg.CalculateExpiration(time.Now().Add(configs.TokenExpired).Unix()),
+	}
+
 	if err != nil {
 		switch err.Type {
 		case "error_01":
@@ -83,5 +110,5 @@ func (h *HandlerLogin) LoginHandler(ctx *gin.Context) {
 		CreatedAt:    res.CreatedAt,
 		UpdatedAt:    res.UpdatedAt,
 	}
-	helpers.ApiResponse(ctx, http.StatusOK, "success", "Login successfully", resData, res.Auth)
+	helpers.ApiResponse(ctx, http.StatusOK, "success", "Login successfully", resData, authToken)
 }

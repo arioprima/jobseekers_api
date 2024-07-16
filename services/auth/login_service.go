@@ -2,14 +2,11 @@ package services
 
 import (
 	"context"
-	"github.com/arioprima/jobseekers_api/config"
 	"github.com/arioprima/jobseekers_api/models"
-	"github.com/arioprima/jobseekers_api/pkg"
 	repositories "github.com/arioprima/jobseekers_api/repositories/auth"
 	"github.com/arioprima/jobseekers_api/schemas"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
-	"time"
 )
 
 type ServiceLogin interface {
@@ -38,34 +35,5 @@ func (s *serviceLoginImpl) LoginService(ctx context.Context, tx *gorm.DB, input 
 	if err != nil {
 		return nil, err
 	}
-
-	if res.ProfileImage != nil && *res.ProfileImage == "" {
-		res.ProfileImage = nil
-	}
-
-	configs, _ := config.LoadConfig(".")
-	accessTokenData := map[string]interface{}{
-		"id":            res.ID,
-		"email":         res.Biodata.Email,
-		"firstname":     res.Biodata.Firstname,
-		"lastname":      res.Biodata.Lastname,
-		"role_id":       res.Role.ID,
-		"role_name":     res.Role.Name,
-		"profile_image": res.ProfileImage,
-		"token":         res.Token,
-	}
-
-	accessToken, tokenErr := pkg.GenerateToken(accessTokenData, configs.TokenSecret, configs.TokenExpired)
-
-	if tokenErr != nil {
-		return nil, &schemas.SchemaDatabaseError{
-			Code: 500,
-			Type: "error_04",
-		}
-	}
-
-	res.Auth.AccessToken = accessToken
-	res.Auth.Type = "Bearer"
-	res.Auth.ExpiredAt = pkg.CalculateExpiration(time.Now().Add(configs.TokenExpired).Unix())
 	return res, err
 }
