@@ -17,11 +17,11 @@ type Database struct {
 }
 
 type Email struct {
-	EmailFrom string `mapstructure:"from"`
-	SMTPHost  string `mapstructure:"host"`
-	SMTPPass  string `mapstructure:"password"`
-	SMTPPort  int    `mapstructure:"port"`
-	SMTPUser  string `mapstructure:"user"`
+	SMTPHost   string `mapstructure:"host"`
+	SMTPPass   string `mapstructure:"password"`
+	SMTPPort   int    `mapstructure:"port"`
+	SMTPEmail  string `mapstructure:"email"`
+	SMTPSender string `mapstructure:"sender"`
 }
 
 type Config struct {

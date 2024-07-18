@@ -35,3 +35,9 @@ type LoginUserResponse struct {
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }
+
+type OtpEmailResponse struct {
+	ID      string `json:"id"`
+	Email   string `json:"email"`
+	OtpCode string `json:"otp_code"`
+}
