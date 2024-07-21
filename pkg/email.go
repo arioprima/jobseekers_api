@@ -2,10 +2,15 @@ package pkg
 
 import (
 	"crypto/tls"
+	"fmt"
 	"github.com/arioprima/jobseekers_api/config"
+	"github.com/arioprima/jobseekers_api/helpers"
 	"gopkg.in/gomail.v2"
 	"math/rand"
+	"time"
 )
+
+var logger = config.NewLogger()
 
 func GenerateOtp() string {
 	number := "0123456789"
@@ -18,8 +23,10 @@ func GenerateOtp() string {
 	return string(otp)
 }
 
-func SendEmail(email, otp string) {
+func SendEmail(name, email, otp, fileName string) {
 	configs, _ := config.LoadConfig(".")
+	date := time.Now().Format("2 Jan, 2006")
+	year := time.Now().Year()
 
 	//send email
 	smtpEmail := configs.Email.SMTPEmail
@@ -38,7 +45,21 @@ func SendEmail(email, otp string) {
 		"To":      {to},
 		"Subject": {"OTP Verification"},
 	})
-	mailer.SetBody("text/html", "Your OTP is "+otp)
+	mailer.SetBody("text/html", helpers.ParseHtml(fileName, map[string]string{
+		"to":   name,
+		"otp":  otp,
+		"date": date,
+		"year": fmt.Sprintf("%d", year),
+	}))
+	//
+	//logger.WithFields(logrus.Fields{
+	//	"smtp_email":  smtpEmail,
+	//	"smtp_host":   smtpHost,
+	//	"smtp_sender": smtpSender,
+	//	"smtp_port":   smtpPort,
+	//	"smtp_pass":   smtpPass,
+	//	"to":          to,
+	//}).Debug("Preparing to send email")
 
 	dialer := gomail.NewDialer(
 		smtpHost,

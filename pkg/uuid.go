@@ -2,10 +2,10 @@ package pkg
 
 import "github.com/google/uuid"
 
-func GenerateUUID() (string, error) {
+func GenerateUUID() string {
 	generateUuid, err := uuid.NewV7()
 	if err != nil {
-		return "", err
+		return ""
 	}
-	return generateUuid.String(), nil
+	return generateUuid.String()
 }

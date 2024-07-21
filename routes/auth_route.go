@@ -21,9 +21,15 @@ func SetupAuthRoutes(route *gin.RouterGroup, db *gorm.DB) {
 	loginService := services.NewServiceLoginImpl(loginRepository, nil)
 	loginHandler := handlers.NewHandlerLogin(loginService)
 
+	//register
+	registerRepository := repositories.NewRegisterRepositoryImpl(db)
+	registerService := services.NewServiceRegisterImpl(registerRepository)
+	registerHandler := handlers.NewHandlerRegister(registerService)
+
 	// Setup routes
 	groupRoute := route.Group("/api")
 	groupRoute.POST("/login", loginHandler.LoginHandler)
+	groupRoute.POST("/register", registerHandler.RegisterHandler)
 
 	user := &TestMiddleware{
 		ID:    1,

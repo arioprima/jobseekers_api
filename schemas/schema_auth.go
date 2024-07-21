@@ -6,7 +6,7 @@ type SchemaDataUser struct {
 	ID           string    `json:"id" validate:"uuid"`
 	BiodataId    string    `json:"biodata_id" validate:"uuid"`
 	Firstname    string    `json:"firstname" validate:"required"`
-	Lastname     string    `json:"lastname" validate:"required"`
+	Lastname     string    `json:"lastname"`
 	Email        string    `json:"email" validate:"required,email"`
 	Phone        string    `json:"phone" validate:"required"`
 	BirthDate    time.Time `json:"birth_date"`
@@ -20,6 +20,7 @@ type SchemaDataUser struct {
 	ProfileImage string    `json:"profile_image"`
 	RoleId       string    `json:"role_id"`
 	Summary      string    `json:"summary"`
+	OtpCode      string    `json:"otp_code"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }
@@ -40,4 +41,13 @@ type OtpEmailResponse struct {
 	ID      string `json:"id"`
 	Email   string `json:"email"`
 	OtpCode string `json:"otp_code"`
+}
+
+type RegisterResponse struct {
+	ID        string    `json:"id"`
+	Firstname string    `json:"firstname"`
+	Lastname  string    `json:"lastname"`
+	Email     string    `json:"email"`
+	RoleId    string    `json:"role_id"`
+	CreatedAt time.Time `json:"created_at"`
 }

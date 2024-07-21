@@ -3,8 +3,10 @@ package repositories
 import (
 	"context"
 	"github.com/arioprima/jobseekers_api/models"
+	"github.com/arioprima/jobseekers_api/pkg"
 	"github.com/arioprima/jobseekers_api/schemas"
 	"gorm.io/gorm"
+	"net/http"
 )
 
 type RegisterRepository interface {
@@ -25,7 +27,8 @@ func (r *registerRepositoryImpl) Register(ctx context.Context, tx *gorm.DB, req 
 	//TODO implement me
 	var (
 		user models.ModelAuth
-		err  error
+		//biodata models.Biodata
+		err error
 	)
 
 	if tx == nil {
@@ -42,24 +45,43 @@ func (r *registerRepositoryImpl) Register(ctx context.Context, tx *gorm.DB, req 
 		}
 	}()
 
-	checkUserAccount := tx.Where("email = ?", req.Email).First(&user)
-	if checkUserAccount.RowsAffected > 0 {
-		return nil, &schemas.SchemaDatabaseError{
-			Code: 400,
-			Type: "error_01",
-		}
-	}
+	//checkUserAccount := tx.Where("email = ?", req.Email).First(&biodata)
+	//if checkUserAccount.RowsAffected > 0 {
+	//	return nil, &schemas.SchemaDatabaseError{
+	//		Code: http.StatusConflict,
+	//		Type: "error_01",
+	//	}
+	//}
 
+	user.ID = req.ID
+	user.BiodataId = req.BiodataId
+	user.Biodata.ID = req.BiodataId
 	user.Biodata.Firstname = req.Firstname
 	user.Biodata.Lastname = req.Lastname
 	user.Biodata.Email = req.Email
 	user.Password = req.Password
+	user.RoleId = req.RoleId
 
 	if err = tx.Create(&user).Error; err != nil {
 		return nil, &schemas.SchemaDatabaseError{
-			Code: 500,
+			Code: http.StatusInternalServerError,
 			Type: "error_02",
 		}
 	}
+
+	//insert table otp_code
+	otp := models.OtpCode{
+		ID:     pkg.GenerateUUID(),
+		UserId: req.ID,
+		Code:   req.OtpCode,
+	}
+
+	if err := tx.Create(&otp).Error; err != nil {
+		return nil, &schemas.SchemaDatabaseError{
+			Code: http.StatusInternalServerError,
+			Type: "error_02",
+		}
+	}
+
 	return &user, nil
 }
