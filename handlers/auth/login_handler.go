@@ -28,7 +28,7 @@ func (h *HandlerLogin) LoginHandler(ctx *gin.Context) {
 		helpers.ValidatorErrorResponse(ctx, http.StatusBadRequest, "error", err.Error())
 		return
 	}
-	config := []schemas.ErrorMetaConfig{
+	metaConfigs := []schemas.ErrorMetaConfig{
 		{
 			Tag:     "required",
 			Field:   "Email",
@@ -52,7 +52,7 @@ func (h *HandlerLogin) LoginHandler(ctx *gin.Context) {
 		},
 	}
 
-	errResponse, errCount := pkg.ValidatorLogin(&loginRequest, config)
+	errResponse, errCount := pkg.ValidatorLogin(&loginRequest, metaConfigs)
 	if errCount > 0 {
 		helpers.ValidatorErrorResponse(ctx, http.StatusBadRequest, "error", errResponse)
 		return

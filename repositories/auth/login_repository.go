@@ -33,10 +33,16 @@ func NewRepositoryLoginImpl(log *logrus.Logger, db *gorm.DB) RepositoryLogin {
 
 func (r *repositoryLoginImpl) Login(ctx context.Context, tx *gorm.DB, req *schemas.SchemaDataUser) (*models.ModelAuth, *schemas.SchemaDatabaseError) {
 	//TODO implement me
+	configs, _ := config.LoadConfig(".")
+
 	var (
 		user models.ModelAuth
 		err  error
 	)
+	hashed := sha256.New()
+	hashed.Write([]byte(configs.TokenSecret + time.Now().String()))
+	token := hex.EncodeToString(hashed.Sum(nil))
+	user.Token = token
 
 	if tx == nil {
 		tx = r.DB.WithContext(ctx).Debug().Begin()
@@ -80,13 +86,6 @@ func (r *repositoryLoginImpl) Login(ctx context.Context, tx *gorm.DB, req *schem
 			Type: "error_03",
 		}
 	}
-
-	// Create user session
-	configs, _ := config.LoadConfig(".")
-	hashed := sha256.New()
-	hashed.Write([]byte(configs.TokenSecret + time.Now().String()))
-	token := hex.EncodeToString(hashed.Sum(nil))
-	user.Token = token
 
 	session := models.UserSession{
 		UserID:    user.ID,

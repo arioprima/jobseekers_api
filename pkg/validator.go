@@ -55,3 +55,41 @@ func getFieldValue(s interface{}, field string) (interface{}, bool) {
 	}
 	return f.Interface(), true
 }
+
+func ValidatorRegister(s interface{}, config []schemas.ErrorMetaConfig) (string, int) {
+	v := validator.New()
+	errResponse := ""
+	errCount := 0
+
+	// Validate the individual fields in the struct
+	for _, cfg := range config {
+		fieldValue, ok := getFieldValue(s, cfg.Field)
+		if !ok {
+			log.Printf("Field %s not found in struct", cfg.Field)
+			continue
+		}
+
+		log.Printf("Validating field: %s with value: %v", cfg.Field, fieldValue)
+		if errResponse == "" { // Only validate if no error exists for this field
+			switch cfg.Tag {
+			case "required":
+				if err := v.Var(fieldValue, "required"); err != nil {
+					errResponse = cfg.Message
+					errCount++
+				}
+			case "email":
+				if err := v.Var(fieldValue, "email"); err != nil {
+					errResponse = cfg.Message
+					errCount++
+				}
+			case "min":
+				if err := v.Var(fieldValue, "min="+cfg.Value); err != nil {
+					errResponse = cfg.Message
+					errCount++
+				}
+			}
+		}
+	}
+
+	return errResponse, errCount
+}
