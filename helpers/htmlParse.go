@@ -2,17 +2,16 @@ package helpers
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/arioprima/jobseekers_api/schemas"
+	"github.com/arioprima/jobseekers_api/templates"
 	"github.com/sirupsen/logrus"
 	"html/template"
 )
 
 func ParseHtml(fileName string, data map[string]string) string {
-	html, errParse := template.ParseFiles("templates/" + fileName + ".html")
-
+	// Sesuaikan path jika perlu
+	html, errParse := template.ParseFS(templates.TemplateFS, fileName+".html")
 	if errParse != nil {
-		defer fmt.Println("parser file html failed")
 		logrus.Fatal(errParse.Error())
 	}
 
@@ -25,9 +24,7 @@ func ParseHtml(fileName string, data map[string]string) string {
 
 	buf := new(bytes.Buffer)
 	errExecute := html.Execute(buf, body)
-
 	if errExecute != nil {
-		defer fmt.Println("execute html file failed")
 		logrus.Fatal(errExecute.Error())
 	}
 

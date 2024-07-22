@@ -24,7 +24,6 @@ func NewVerifyEmailRepositoryImpl(db *gorm.DB) VerifyEmailRepository {
 
 func (r *verifyEmailRepositoryImpl) VerifyEmail(ctx context.Context, tx *gorm.DB, userID string, otp string) (*models.OtpCode, *schemas.SchemaDatabaseError) {
 	var (
-		user    models.User
 		otpCode models.OtpCode
 		err     error
 	)
@@ -43,16 +42,26 @@ func (r *verifyEmailRepositoryImpl) VerifyEmail(ctx context.Context, tx *gorm.DB
 		}
 	}()
 
-	err = tx.Where("user_id = ? AND code = ? AND expired_at >", userID, otp, time.Now()).First(&otpCode).Error
+	err = tx.Where("user_id = ? AND code = ? AND expired_at > ?", userID, otp, time.Now()).
+		Order("id").
+		Limit(1).
+		First(&otpCode).Error
+
 	if err != nil {
 		return nil, &schemas.SchemaDatabaseError{
 			Code: 400,
 			Type: "error_01",
 		}
 	}
-	//update is_verified di table user
-	user.IsVerified = true
-	_ = tx.Model(&user).Where("id = ?", userID).Update("is_verified", true).Error
+
+	// Update is_verified di table user
+	err = tx.Model(&models.User{}).Where("id = ?", userID).Update("is_verified", true).Error
+	if err != nil {
+		return nil, &schemas.SchemaDatabaseError{
+			Code: 400,
+			Type: "error_02",
+		}
+	}
 
 	return &otpCode, nil
 }
