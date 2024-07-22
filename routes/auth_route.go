@@ -26,10 +26,16 @@ func SetupAuthRoutes(route *gin.RouterGroup, db *gorm.DB) {
 	registerService := services.NewServiceRegisterImpl(registerRepository)
 	registerHandler := handlers.NewHandlerRegister(registerService)
 
+	//verify email
+	verifyEmailRepository := repositories.NewVerifyEmailRepositoryImpl(db)
+	verifyEmailService := services.NewServiceVerifyEmailImpl(verifyEmailRepository)
+	verifyEmailHandler := handlers.NewVerifyEmailHandler(verifyEmailService)
+
 	// Setup routes
 	groupRoute := route.Group("/api")
 	groupRoute.POST("/login", loginHandler.LoginHandler)
 	groupRoute.POST("/register", registerHandler.RegisterHandler)
+	groupRoute.GET("/verify_email", verifyEmailHandler.VerifyEmailHandler)
 
 	user := &TestMiddleware{
 		ID:    1,
