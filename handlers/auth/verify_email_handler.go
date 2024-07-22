@@ -16,26 +16,29 @@ func NewVerifyEmailHandler(service services.ServiceVerifyEmail) *VerifyEmailHand
 }
 
 func (v *VerifyEmailHandler) VerifyEmailHandler(ctx *gin.Context) {
-	//TODO implement me
 	userID := ctx.Query("user_id")
 	otp := ctx.Query("otp")
 
 	if userID == "" {
-		helpers.ValidatorErrorResponse(ctx, 400, "error", "user_id is required")
+		helpers.ValidatorErrorResponse(ctx, http.StatusBadRequest, "error", "user_id is required")
 		return
-	} else if otp == "" {
-		helpers.ValidatorErrorResponse(ctx, 400, "error", "otp is required")
+	}
+	if otp == "" {
+		helpers.ValidatorErrorResponse(ctx, http.StatusBadRequest, "error", "otp is required")
 		return
 	}
 
-	res, err := v.Service.VerifyEmailService(ctx, nil, userID, otp)
+	_, err := v.Service.VerifyEmailService(ctx, nil, userID, otp)
+
 	if err != nil {
 		switch err.Type {
 		case "error_01":
-			helpers.ValidatorErrorResponse(ctx, 400, "error", "Invalid OTP")
+			helpers.ValidatorErrorResponse(ctx, http.StatusBadRequest, "error", "Invalid OTP")
+		default:
+			helpers.ValidatorErrorResponse(ctx, http.StatusInternalServerError, "error", "Internal Server Error")
 		}
+		return
 	}
 
-	helpers.ApiResponse(ctx, http.StatusOK, "success", "Register successfully", res, nil)
-
+	helpers.ApiResponse(ctx, http.StatusOK, "success", "Verification successful", nil, nil)
 }
