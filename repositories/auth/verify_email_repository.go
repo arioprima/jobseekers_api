@@ -5,6 +5,7 @@ import (
 	"github.com/arioprima/jobseekers_api/models"
 	"github.com/arioprima/jobseekers_api/schemas"
 	"gorm.io/gorm"
+	"time"
 )
 
 type VerifyEmailRepository interface {
@@ -42,7 +43,7 @@ func (r *verifyEmailRepositoryImpl) VerifyEmail(ctx context.Context, tx *gorm.DB
 		}
 	}()
 
-	err = tx.Where("user_id = ? AND code = ?", userID, otp).First(&otpCode).Error
+	err = tx.Where("user_id = ? AND code = ? AND expired_at >", userID, otp, time.Now()).First(&otpCode).Error
 	if err != nil {
 		return nil, &schemas.SchemaDatabaseError{
 			Code: 400,
