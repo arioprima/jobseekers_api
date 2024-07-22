@@ -73,5 +73,5 @@ func (h *HandlerRegister) RegisterHandler(ctx *gin.Context) {
 		return
 	}
 
-	helpers.ApiResponse(ctx, http.StatusCreated, "success", "register successfully", res, nil)
+	helpers.ApiResponse(ctx, http.StatusCreated, "success", "Send Token successfully", res, nil)
 }
