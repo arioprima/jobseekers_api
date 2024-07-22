@@ -27,8 +27,8 @@ func (r *registerRepositoryImpl) Register(ctx context.Context, tx *gorm.DB, req 
 	//TODO implement me
 	var (
 		user models.ModelAuth
-		//biodata models.Biodata
-		err error
+		bio  models.Biodata
+		err  error
 	)
 
 	if tx == nil {
@@ -45,13 +45,13 @@ func (r *registerRepositoryImpl) Register(ctx context.Context, tx *gorm.DB, req 
 		}
 	}()
 
-	//checkUserAccount := tx.Where("email = ?", req.Email).First(&biodata)
-	//if checkUserAccount.RowsAffected > 0 {
-	//	return nil, &schemas.SchemaDatabaseError{
-	//		Code: http.StatusConflict,
-	//		Type: "error_01",
-	//	}
-	//}
+	checkUserAccount := tx.Where("email = ?", req.Email).First(&bio)
+	if checkUserAccount.RowsAffected > 0 {
+		return nil, &schemas.SchemaDatabaseError{
+			Code: http.StatusConflict,
+			Type: "error_01",
+		}
+	}
 
 	user.ID = req.ID
 	user.BiodataId = req.BiodataId
