@@ -1,15 +1,12 @@
 package handlers
 
 import (
-	"github.com/arioprima/jobseekers_api/config"
 	"github.com/arioprima/jobseekers_api/helpers"
-	"github.com/arioprima/jobseekers_api/models"
 	"github.com/arioprima/jobseekers_api/pkg"
 	"github.com/arioprima/jobseekers_api/schemas"
 	services "github.com/arioprima/jobseekers_api/services/auth"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"time"
 )
 
 type HandlerLogin struct {
@@ -21,14 +18,13 @@ func NewHandlerLogin(service services.ServiceLogin) *HandlerLogin {
 }
 
 func (h *HandlerLogin) LoginHandler(ctx *gin.Context) {
-	configs, _ := config.LoadConfig(".")
 	var loginRequest schemas.SchemaDataUser
 
 	if err := ctx.ShouldBindJSON(&loginRequest); err != nil {
 		helpers.ValidatorErrorResponse(ctx, http.StatusBadRequest, "error", err.Error())
 		return
 	}
-	config := []schemas.ErrorMetaConfig{
+	metaConfigs := []schemas.ErrorMetaConfig{
 		{
 			Tag:     "required",
 			Field:   "Email",
@@ -52,37 +48,13 @@ func (h *HandlerLogin) LoginHandler(ctx *gin.Context) {
 		},
 	}
 
-	errResponse, errCount := pkg.ValidatorLogin(&loginRequest, config)
+	errResponse, errCount := pkg.ValidatorLogin(&loginRequest, metaConfigs)
 	if errCount > 0 {
 		helpers.ValidatorErrorResponse(ctx, http.StatusBadRequest, "error", errResponse)
 		return
 	}
 
-	res, err := h.Service.LoginService(ctx, nil, &loginRequest)
-
-	if res.ProfileImage != nil && *res.ProfileImage == "" {
-		res.ProfileImage = nil
-	}
-
-	accessTokenData := map[string]interface{}{
-		"id":            res.ID,
-		"email":         res.Biodata.Email,
-		"firstname":     res.Biodata.Firstname,
-		"lastname":      res.Biodata.Lastname,
-		"role_id":       res.Role.ID,
-		"role_name":     res.Role.Name,
-		"profile_image": res.ProfileImage,
-		"token":         res.Token,
-	}
-
-	accessToken, _ := pkg.GenerateToken(accessTokenData, configs.TokenSecret, configs.TokenExpired)
-
-	authToken := models.TokenAuth{
-		AccessToken: accessToken,
-		Type:        "Bearer",
-		ExpiredAt:   pkg.CalculateExpiration(time.Now().Add(configs.TokenExpired).Unix()),
-	}
-
+	res, err, authToken := h.Service.LoginService(ctx, nil, &loginRequest)
 	if err != nil {
 		switch err.Type {
 		case "error_01":
@@ -94,7 +66,7 @@ func (h *HandlerLogin) LoginHandler(ctx *gin.Context) {
 		case "error_04":
 			helpers.ApiResponse(ctx, http.StatusInternalServerError, "error", "Internal server error", nil, nil)
 		default:
-			helpers.ApiResponse(ctx, http.StatusInternalServerError, "error", "Unknown error", nil, nil)
+			helpers.ApiResponse(ctx, http.StatusInternalServerError, "error", "User Is Not Verified or Not Active", nil, nil)
 		}
 		return
 	}

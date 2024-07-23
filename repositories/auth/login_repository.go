@@ -33,10 +33,17 @@ func NewRepositoryLoginImpl(log *logrus.Logger, db *gorm.DB) RepositoryLogin {
 
 func (r *repositoryLoginImpl) Login(ctx context.Context, tx *gorm.DB, req *schemas.SchemaDataUser) (*models.ModelAuth, *schemas.SchemaDatabaseError) {
 	//TODO implement me
+	configs, _ := config.LoadConfig(".")
+
 	var (
 		user models.ModelAuth
+		bio  models.Biodata
 		err  error
 	)
+	hashed := sha256.New()
+	hashed.Write([]byte(configs.TokenSecret + time.Now().String()))
+	token := hex.EncodeToString(hashed.Sum(nil))
+	user.Token = token
 
 	if tx == nil {
 		tx = r.DB.WithContext(ctx).Debug().Begin()
@@ -52,6 +59,14 @@ func (r *repositoryLoginImpl) Login(ctx context.Context, tx *gorm.DB, req *schem
 		}
 	}()
 
+	checkUserAccount := tx.Where("email = ?", req.Email).First(&bio)
+	if checkUserAccount.RowsAffected < 1 {
+		return nil, &schemas.SchemaDatabaseError{
+			Code: http.StatusBadRequest,
+			Type: "error_01",
+		}
+	}
+
 	if err = tx.Joins("LEFT JOIN biodata b ON users.biodata_id = b.id").
 		Joins("LEFT JOIN user_roles ur ON users.role_id = ur.id").
 		Preload("Biodata").
@@ -63,8 +78,8 @@ func (r *repositoryLoginImpl) Login(ctx context.Context, tx *gorm.DB, req *schem
 		First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &schemas.SchemaDatabaseError{
-				Code: http.StatusNotFound,
-				Type: "error_01",
+				Code: http.StatusUnauthorized,
+				Type: "error",
 			}
 		}
 		return nil, &schemas.SchemaDatabaseError{
@@ -80,13 +95,6 @@ func (r *repositoryLoginImpl) Login(ctx context.Context, tx *gorm.DB, req *schem
 			Type: "error_03",
 		}
 	}
-
-	// Create user session
-	configs, _ := config.LoadConfig(".")
-	hashed := sha256.New()
-	hashed.Write([]byte(configs.TokenSecret + time.Now().String()))
-	token := hex.EncodeToString(hashed.Sum(nil))
-	user.Token = token
 
 	session := models.UserSession{
 		UserID:    user.ID,
