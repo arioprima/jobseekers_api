@@ -7,6 +7,7 @@ import (
 	"github.com/arioprima/jobseekers_api/schemas"
 	"gorm.io/gorm"
 	"net/http"
+	"sync"
 )
 
 type RegisterRepository interface {
@@ -24,15 +25,15 @@ func NewRegisterRepositoryImpl(db *gorm.DB) RegisterRepository {
 }
 
 func (r *registerRepositoryImpl) Register(ctx context.Context, tx *gorm.DB, req *schemas.SchemaDataUser) (*models.ModelAuth, *schemas.SchemaDatabaseError) {
-	//TODO implement me
 	var (
 		user models.ModelAuth
 		bio  models.Biodata
 		err  error
+		wg   sync.WaitGroup
 	)
 
 	if tx == nil {
-		tx = r.DB.WithContext(ctx).Debug().Begin()
+		tx = r.DB.WithContext(ctx).Begin()
 	}
 
 	defer func() {
@@ -45,12 +46,25 @@ func (r *registerRepositoryImpl) Register(ctx context.Context, tx *gorm.DB, req 
 		}
 	}()
 
-	checkUserAccount := tx.Where("email = ?", req.Email).First(&bio)
-	if checkUserAccount.RowsAffected > 0 {
-		return nil, &schemas.SchemaDatabaseError{
-			Code: http.StatusConflict,
-			Type: "error_01",
+	errChan := make(chan error, 1)
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		checkUserAccount := tx.Where("email = ?", req.Email).First(&bio)
+		if checkUserAccount.RowsAffected > 0 {
+			errChan <- &schemas.SchemaDatabaseError{
+				Code: http.StatusConflict,
+				Type: "error_01",
+			}
 		}
+	}()
+
+	wg.Wait()
+	close(errChan)
+
+	if err = <-errChan; err != nil {
+		return nil, err.(*schemas.SchemaDatabaseError)
 	}
 
 	user.ID = req.ID
@@ -69,14 +83,13 @@ func (r *registerRepositoryImpl) Register(ctx context.Context, tx *gorm.DB, req 
 		}
 	}
 
-	//insert table otp_code
 	otp := models.OtpCode{
 		ID:     pkg.GenerateUUID(),
 		UserId: req.ID,
 		Code:   req.OtpCode,
 	}
 
-	if err := tx.Create(&otp).Error; err != nil {
+	if err = tx.Create(&otp).Error; err != nil {
 		return nil, &schemas.SchemaDatabaseError{
 			Code: http.StatusInternalServerError,
 			Type: "error_02",

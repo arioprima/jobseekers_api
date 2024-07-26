@@ -27,3 +27,7 @@ type ErrorMetaConfig struct {
 type ErrorConfig struct {
 	Options []ErrorMetaConfig `json:"options"`
 }
+
+func (e *SchemaDatabaseError) Error() string {
+	return e.Type
+}
