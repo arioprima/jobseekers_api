@@ -31,11 +31,17 @@ func SetupAuthRoutes(route *gin.RouterGroup, db *gorm.DB) {
 	verifyEmailService := services.NewServiceVerifyEmailImpl(verifyEmailRepository)
 	verifyEmailHandler := handlers.NewVerifyEmailHandler(verifyEmailService)
 
+	//resend otp
+	resendOtpRepository := repositories.NewResendOtpRepositoryImpl(db)
+	resendOtpService := services.NewServiceResendOtpImpl(resendOtpRepository)
+	resendOtpHandler := handlers.NewResendOtpHandler(resendOtpService)
+
 	// Setup routes
 	groupRoute := route.Group("/api")
 	groupRoute.POST("/login", loginHandler.LoginHandler)
 	groupRoute.POST("/register", registerHandler.RegisterHandler)
 	groupRoute.GET("/verify_email", verifyEmailHandler.VerifyEmailHandler)
+	groupRoute.PUT("/resend_otp/:user_id", resendOtpHandler.ResendOtpHandler)
 
 	user := &TestMiddleware{
 		ID:    1,
