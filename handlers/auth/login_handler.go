@@ -66,7 +66,7 @@ func (h *HandlerLogin) LoginHandler(ctx *gin.Context) {
 		case "error_04":
 			helpers.ApiResponse(ctx, http.StatusInternalServerError, "error", "Internal server error", nil, nil)
 		default:
-			helpers.ApiResponse(ctx, http.StatusInternalServerError, "error", "User Is Not Verified or Not Active", nil, nil)
+			helpers.ApiResponse(ctx, http.StatusForbidden, "error", "User Is Not Verified or Not Active", nil, nil)
 		}
 		return
 	}

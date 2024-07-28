@@ -40,13 +40,14 @@ func (r *repositoryLoginImpl) Login(ctx context.Context, tx *gorm.DB, req *schem
 		bio  models.Biodata
 		err  error
 	)
+
 	hashed := sha256.New()
 	hashed.Write([]byte(configs.TokenSecret + time.Now().String()))
 	token := hex.EncodeToString(hashed.Sum(nil))
 	user.Token = token
 
 	if tx == nil {
-		tx = r.DB.WithContext(ctx).Debug().Begin()
+		tx = r.DB.WithContext(ctx).Begin()
 	}
 
 	defer func() {

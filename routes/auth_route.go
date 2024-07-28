@@ -40,8 +40,8 @@ func SetupAuthRoutes(route *gin.RouterGroup, db *gorm.DB) {
 	groupRoute := route.Group("/api")
 	groupRoute.POST("/login", loginHandler.LoginHandler)
 	groupRoute.POST("/register", registerHandler.RegisterHandler)
-	groupRoute.GET("/verify_email", verifyEmailHandler.VerifyEmailHandler)
-	groupRoute.PUT("/resend_otp/:user_id", resendOtpHandler.ResendOtpHandler)
+	groupRoute.GET("/verify-email", verifyEmailHandler.VerifyEmailHandler)
+	groupRoute.PUT("/resend-otp/:user_id", resendOtpHandler.ResendOtpHandler)
 
 	user := &TestMiddleware{
 		ID:    1,
