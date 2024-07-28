@@ -1,0 +1,357 @@
+openapi: 3.0.0
+info:
+  title: Jobvacancies API Documentation
+  description: Jobvacancies Restful API Documentation
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: https://jobvacancies.me/job-vacancies-api/api
+    description: Jobvacancies API Documentation
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  /login:
+    post:
+      tags:
+        - Auth
+      summary: Login
+      description: User login
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  example: tonystark@gmail.com
+                password:
+                  type: string
+                  example: test1234
+      responses:
+        '200':
+          description: User authenticated successfully
+          content:
+            application/json:
+              schema: {}
+              example:
+                code: 200
+                status: success
+                message: Login successfully
+                data:
+                  id: 019088d9-2143-7f1e-9dd3-1c696dd8aa25
+                  firstname: Tony
+                  lastname: Stark
+                  email: tonystark@gmail.com
+                  role_id: 019047ca-f542-7182-8b6b-7978f905dfe7
+                  role_name: admin
+                  profile_image: null
+                  created_at: 2024-07-13T19:44:20.82494Z
+                  updated_at: 2024-07-13T19:44:20.824941
+                auth:
+                  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjIxNDkzODYsImlhdCI6MTcyMjE0NTc4NiwibmJmIjoxNzIyMTQ1Nzg2LCJzdWIiOnsiZW1haWwiOiJ0b255c3RhcmtAZ21haWwuY29tIiwiZmlyc3RuYW1lIjoiVG9ueSIsImlkIjoiMDE5MDg4ZDktMjE0My03ZjFlLTlkZDMtMWM2OTZkZDhhYTI1IiwibGFzdG5hbWUiOiJTdGFyayIsInByb2ZpbGVfaW1hZ2UiOiIiLCJyb2xlX2lkIjoiMDE5MDQ3Y2EtZjU0Mi03MTgyLThiNmItNzk3OGY5MDVkZmU3Iiwicm9sZV9uYW1lIjoiYWRtaW4iLCJ0b2tlbiI6IjZmZDU2Y2Y3YmVhYmM1ZjY0Y2MxZWM3NTZkZTVkODBkMmJkNDE5MThhMGJhMTY2Y2MzZmQ3ZjRmZTEzOGRkYWMifX0.sN_jOKrEe7NirIDFrj3ZNB1TyDD9ajWiqe6MM988CoY
+                  type: Bearer
+                  expired_at: 2024-07-28T13:49:46+07:00
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: {}
+              example:
+                code: 401
+                status: error
+                message: Password is incorrect
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema: { }
+              example:
+                code: 403
+                status: error
+                message: User Is Not Verified or Not Active
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema: { }
+              example:
+                code: 404
+                status: error
+                message: Email not found'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema: { }
+              example:
+                code: 500
+                status: error
+                message: Internal Server Error
+  /register:
+    post:
+      tags:
+        - Auth
+      summary: Register
+      description: User register
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - firstname
+                - email
+                - password
+              properties:
+                firstname:
+                  type: string
+                  example: Tony
+                lastname:
+                    type: string
+                    example: Stark
+                email:
+                  type: string
+                  example: tonystark@gmail.com
+                password:
+                  type: string
+                  example: test1234
+      responses:
+        '201':
+          description: user registered successfully
+          content:
+            application/json:
+              schema: { }
+              example:
+                code: 201
+                status: success
+                message: Register successfully
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  status:
+                    type: string
+                  message:
+                    type: string
+              examples:
+                missingFirstname:
+                  summary: Firstname is required
+                  value:
+                    code: 400
+                    status: error
+                    message: Firstname is required
+                missingEmail:
+                  summary: Email is required
+                  value:
+                    code: 400
+                    status: error
+                    message: Email is required
+                missingPassword:
+                  summary: Password is required
+                  value:
+                    code: 400
+                    status: error
+                    message: Password is required
+                shortPassword:
+                  summary: Password must be at least 3 characters
+                  value:
+                    code: 400
+                    status: error
+                    message: Password must be at least 3 characters
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema: { }
+              example:
+                code: 409
+                status: error
+                message: Email already exists'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema: { }
+              example:
+                code: 500
+                status: error
+                message: Internal Server Error
+  /verify-email:
+    get:
+      tags:
+        - Auth
+      summary: Verify Email
+      description: Verifies the email address using a user ID and OTP.
+      parameters:
+        - name: user_id
+          in: query
+          description: The unique ID of the user whose email is to be verified.
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 0190f00f-6c0a-7e77-98f9-f54a28d5bb8c
+        - name: otp
+          in: query
+          description: OTP
+          required: true
+          schema:
+            type: string
+            example: 661214
+      responses:
+        '200':
+          description: Email verification successful
+          content:
+            application/json:
+              schema: { }
+              example:
+                code: 200
+                status: success
+                message: Verification successfully
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  status:
+                    type: string
+                  message:
+                    type: string
+              examples:
+                missingId:
+                  summary: user_id is required
+                  value:
+                    code: 400
+                    status: error
+                    message: user_id is required
+                missingOtp:
+                  summary: otp is required
+                  value:
+                    code: 400
+                    status: error
+                    message: otp is required
+                invalidOtp:
+                  summary: Please enter a valid OTP
+                  value:
+                    code: 400
+                    status: error
+                    message: Please enter a valid OTP
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema: { }
+              example:
+                code: 500
+                status: error
+                message: Internal Server Error
+  /resend-otp/{user_id}:
+    put:
+      tags:
+        - Auth
+      summary: Resend OTP
+      description: Resends OTP to the email associated with the given user ID.
+      parameters:
+        - name: user_id
+          in: query
+          description: The unique ID of the user whose email is to be verified.
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 0190f00f-6c0a-7e77-98f9-f54a28d5bb8c
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "himteliptek2022@gmail.com"
+                firstname:
+                  type: string
+                  example: "Himtel"
+                lastname:
+                  type: string
+                  example: "IpteK"
+            examples:
+              resendOtpRequest:
+                summary: Request to resend OTP
+                value:
+                  email: "himteliptek2022@gmail.com"
+                  firstname: "Himtel"
+                  lastname: "Iptek"
+      responses:
+        '200':
+          description: Resend OTP successfully
+          content:
+            application/json:
+              schema: { }
+              example:
+                code: 200
+                status: success
+                message: Resend OTP successfully
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  status:
+                    type: string
+                  message:
+                    type: string
+              examples:
+                missingId:
+                  summary: user_id is required
+                  value:
+                    code: 400
+                    status: error
+                    message: user_id is required
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema: { }
+              example:
+                code: 404
+                status: error
+                message: user not found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema: { }
+              example:
+                code: 500
+                status: error
+                message: Internal Server Error
