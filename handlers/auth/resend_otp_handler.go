@@ -28,7 +28,7 @@ func (r *ResendOtpHandler) ResendOtpHandler(ctx *gin.Context) {
 	if err != nil {
 		switch err.Type {
 		case "error_01":
-			helpers.ValidatorErrorResponse(ctx, http.StatusBadRequest, "error", "User not found")
+			helpers.ValidatorErrorResponse(ctx, http.StatusNotFound, "error", "User not found")
 		default:
 			helpers.ValidatorErrorResponse(ctx, http.StatusInternalServerError, "error", "Internal Server Error")
 		}

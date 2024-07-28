@@ -60,7 +60,7 @@ func (h *HandlerRegister) RegisterHandler(ctx *gin.Context) {
 		return
 	}
 
-	res, err := h.Service.RegisterService(ctx, nil, &registerRequest)
+	_, err := h.Service.RegisterService(ctx, nil, &registerRequest)
 	if err != nil {
 		switch err.Type {
 		case "error_01":
@@ -73,5 +73,5 @@ func (h *HandlerRegister) RegisterHandler(ctx *gin.Context) {
 		return
 	}
 
-	helpers.ApiResponse(ctx, http.StatusCreated, "success", "Register successfully", res, nil)
+	helpers.ApiResponse(ctx, http.StatusCreated, "success", "Register successfully", nil, nil)
 }

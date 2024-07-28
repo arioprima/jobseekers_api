@@ -33,12 +33,12 @@ func (v *VerifyEmailHandler) VerifyEmailHandler(ctx *gin.Context) {
 	if err != nil {
 		switch err.Type {
 		case "error_01":
-			helpers.ValidatorErrorResponse(ctx, http.StatusBadRequest, "error", "Invalid OTP")
+			helpers.ValidatorErrorResponse(ctx, http.StatusBadRequest, "error", "Please enter a valid OTP")
 		default:
 			helpers.ValidatorErrorResponse(ctx, http.StatusInternalServerError, "error", "Internal Server Error")
 		}
 		return
 	}
 
-	helpers.ApiResponse(ctx, http.StatusOK, "success", "Verification successful", nil, nil)
+	helpers.ApiResponse(ctx, http.StatusOK, "success", "Verification successfully", nil, nil)
 }
