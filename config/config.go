@@ -24,6 +24,11 @@ type Email struct {
 	SMTPSender string `mapstructure:"sender"`
 }
 
+type OAuth struct {
+	GoogleClientID     string `mapstructure:"google_client_id"`
+	GoogleClientSecret string `mapstructure:"google_client_secret"`
+}
+
 type Config struct {
 	PORT         string        `mapstructure:"port"`
 	ClientOrigin string        `mapstructure:"client_origin"`
@@ -33,21 +38,22 @@ type Config struct {
 	OTPExpired   time.Duration `mapstructure:"otp_expire_time"`
 	Database     Database      `mapstructure:"database"`
 	Email        Email         `mapstructure:"email"`
+	OAuth        OAuth         `mapstructure:"oauth"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
-	viper := viper.New()
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(path)
-	viper.AutomaticEnv()
+	v := viper.New()
+	v.SetConfigName("config")
+	v.SetConfigType("yaml")
+	v.AddConfigPath(path)
+	v.AutomaticEnv()
 
-	err = viper.ReadInConfig()
+	err = v.ReadInConfig()
 	if err != nil {
 		log.Fatalf("Error reading config file, %s", err)
 	}
 
-	err = viper.Unmarshal(&config)
+	err = v.Unmarshal(&config)
 	if err != nil {
 		log.Fatalf("Unable to decode into struct, %v", err)
 	}

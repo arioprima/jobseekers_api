@@ -39,7 +39,7 @@ func main() {
 
 	routeGroup := router.Group("/job-vacancies-api")
 
-	routes.SetupAuthRoutes(routeGroup, db)
+	routes.SetupAuthRoutes(routeGroup, db, loadConfig)
 
 	port := loadConfig.PORT
 	err = router.Run(":" + port)

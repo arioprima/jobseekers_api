@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"github.com/arioprima/jobseekers_api/config"
 	handlers "github.com/arioprima/jobseekers_api/handlers/auth"
 	repositories "github.com/arioprima/jobseekers_api/repositories/auth"
 	services "github.com/arioprima/jobseekers_api/services/auth"
@@ -15,7 +16,7 @@ type TestMiddleware struct {
 	Name2 string `json:"name2"`
 }
 
-func SetupAuthRoutes(route *gin.RouterGroup, db *gorm.DB) {
+func SetupAuthRoutes(route *gin.RouterGroup, db *gorm.DB, cfg config.Config) {
 	// Initialize dependencies
 	loginRepository := repositories.NewRepositoryLoginImpl(nil, db)
 	loginService := services.NewServiceLoginImpl(loginRepository, nil)
@@ -36,12 +37,16 @@ func SetupAuthRoutes(route *gin.RouterGroup, db *gorm.DB) {
 	resendOtpService := services.NewServiceResendOtpImpl(resendOtpRepository)
 	resendOtpHandler := handlers.NewResendOtpHandler(resendOtpService)
 
+	// Initialize OAuth
+	handlers.InitializeOAuthConfig(cfg)
 	// Setup routes
-	groupRoute := route.Group("/api")
+	groupRoute := route.Group("/auth")
 	groupRoute.POST("/login", loginHandler.LoginHandler)
 	groupRoute.POST("/register", registerHandler.RegisterHandler)
 	groupRoute.GET("/verify-email", verifyEmailHandler.VerifyEmailHandler)
 	groupRoute.PUT("/resend-otp/:user_id", resendOtpHandler.ResendOtpHandler)
+	groupRoute.GET("/login/google", handlers.GoogleLogin)
+	groupRoute.GET("/google/callback", handlers.GoogleCallback)
 
 	user := &TestMiddleware{
 		ID:    1,

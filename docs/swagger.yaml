@@ -7,7 +7,7 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.0
 servers:
-  - url: https://jobvacancies.me/job-vacancies-api/api
+  - url: https://jobvacancies.me/job-vacancies-api/
     description: Jobvacancies API Documentation
 components:
   securitySchemes:
@@ -16,7 +16,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
 paths:
-  /login:
+  /auth/login:
     post:
       tags:
         - Auth
@@ -99,7 +99,7 @@ paths:
                 code: 500
                 status: error
                 message: Internal Server Error
-  /register:
+  /auth/register:
     post:
       tags:
         - Auth
@@ -195,7 +195,7 @@ paths:
                 code: 500
                 status: error
                 message: Internal Server Error
-  /verify-email:
+  /auth/verify-email:
     get:
       tags:
         - Auth
@@ -268,7 +268,7 @@ paths:
                 code: 500
                 status: error
                 message: Internal Server Error
-  /resend-otp/{user_id}:
+  /auth/resend-otp/{user_id}:
     put:
       tags:
         - Auth
