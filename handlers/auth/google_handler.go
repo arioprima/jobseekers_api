@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
+	"io"
 	"net/http"
 )
 
@@ -17,7 +18,7 @@ func InitializeOAuthConfig(cfg config.Config) {
 		ClientID:     cfg.OAuth.GoogleClientID,
 		ClientSecret: cfg.OAuth.GoogleClientSecret,
 		RedirectURL:  "http://localhost:8080/job-vacancies-api/auth/google/callback",
-		Scopes:       []string{"email", "profile"},
+		Scopes:       []string{"openid", "email", "profile"},
 		Endpoint:     google.Endpoint,
 	}
 }
@@ -41,13 +42,24 @@ func GoogleCallback(c *gin.Context) {
 		return
 	}
 
+	idToken, ok := token.Extra("id_token").(string)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "could not get ID token"})
+		return
+	}
+
 	client := oauthConfig.Client(c, token)
-	resp, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
+	resp, err := client.Get("https://www.googleapis.com/oauth2/v3/userinfo")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "could not get user info"})
 		return
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "could not close response body"})
+		}
+	}(resp.Body)
 
 	var userInfo map[string]interface{}
 	if err := json.NewDecoder(resp.Body).Decode(&userInfo); err != nil {
@@ -56,5 +68,5 @@ func GoogleCallback(c *gin.Context) {
 	}
 
 	// Process user info (e.g., create or update user in your database)
-	c.JSON(http.StatusOK, gin.H{"user": userInfo})
+	c.JSON(http.StatusOK, gin.H{"user": userInfo, "token": idToken})
 }
