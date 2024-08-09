@@ -2,6 +2,8 @@ package services
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"github.com/arioprima/jobseekers_api/config"
 	"github.com/arioprima/jobseekers_api/models"
 	"github.com/arioprima/jobseekers_api/pkg"
@@ -31,9 +33,17 @@ func NewServiceLoginImpl(repository repositories.RepositoryLogin, log *logrus.Lo
 func (s *serviceLoginImpl) LoginService(ctx context.Context, tx *gorm.DB, input *schemas.SchemaDataUser) (*models.ModelAuth, *schemas.SchemaDatabaseError, *models.TokenAuth) {
 	//TODO implement me
 	configs, _ := config.LoadConfig(".")
+
+	hashed := sha256.New()
+	hashed.Write([]byte(configs.TokenSecret + time.Now().String()))
+	token := hex.EncodeToString(hashed.Sum(nil))
+	expiredAt := pkg.CalculateExpiration(time.Now().Add(configs.TokenExpired).Unix())
+
 	var schema schemas.SchemaDataUser
 	schema.Email = input.Email
 	schema.Password = input.Password
+	schema.Token = token
+	schema.ExpiredAt = expiredAt
 
 	res, err := s.repository.Login(ctx, tx, &schema)
 	if err != nil {
@@ -48,7 +58,7 @@ func (s *serviceLoginImpl) LoginService(ctx context.Context, tx *gorm.DB, input 
 		"role_id":       res.Role.ID,
 		"role_name":     res.Role.Name,
 		"profile_image": res.ProfileImage,
-		"token":         res.Token,
+		"token":         token,
 	}
 
 	accessToken, _ := pkg.GenerateToken(accessTokenData, configs.TokenSecret, configs.TokenExpired)
@@ -56,7 +66,7 @@ func (s *serviceLoginImpl) LoginService(ctx context.Context, tx *gorm.DB, input 
 	authToken := models.TokenAuth{
 		AccessToken: accessToken,
 		Type:        "Bearer",
-		ExpiredAt:   pkg.CalculateExpiration(time.Now().Add(configs.TokenExpired).Unix()),
+		ExpiredAt:   expiredAt,
 	}
 
 	if res.ProfileImage != nil && *res.ProfileImage == "" {

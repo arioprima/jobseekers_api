@@ -15,7 +15,6 @@ type ModelAuth struct {
 	Summary      string    `json:"summary,omitempty" gorm:"column:summary"`
 	CreatedAt    time.Time `json:"created_at" gorm:"column:created_at"`
 	UpdatedAt    time.Time `json:"updated_at" gorm:"column:updated_at"`
-	Token        string    `json:"token,omitempty" gorm:"-"`
 }
 
 func (auth *ModelAuth) TableName() string {

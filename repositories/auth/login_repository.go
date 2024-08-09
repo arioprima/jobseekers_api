@@ -2,14 +2,10 @@ package repositories
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"errors"
-	"github.com/arioprima/jobseekers_api/config"
 	"github.com/arioprima/jobseekers_api/models"
 	"github.com/arioprima/jobseekers_api/pkg"
 	"github.com/arioprima/jobseekers_api/schemas"
-	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"net/http"
 	"time"
@@ -20,31 +16,22 @@ type RepositoryLogin interface {
 }
 
 type repositoryLoginImpl struct {
-	DB  *gorm.DB
-	Log *logrus.Logger
+	DB *gorm.DB
 }
 
-func NewRepositoryLoginImpl(log *logrus.Logger, db *gorm.DB) RepositoryLogin {
+func NewRepositoryLoginImpl(db *gorm.DB) RepositoryLogin {
 	return &repositoryLoginImpl{
-		DB:  db,
-		Log: log,
+		DB: db,
 	}
 }
 
 func (r *repositoryLoginImpl) Login(ctx context.Context, tx *gorm.DB, req *schemas.SchemaDataUser) (*models.ModelAuth, *schemas.SchemaDatabaseError) {
 	//TODO implement me
-	configs, _ := config.LoadConfig(".")
-
 	var (
 		user models.ModelAuth
 		bio  models.Biodata
 		err  error
 	)
-
-	hashed := sha256.New()
-	hashed.Write([]byte(configs.TokenSecret + time.Now().String()))
-	token := hex.EncodeToString(hashed.Sum(nil))
-	user.Token = token
 
 	if tx == nil {
 		tx = r.DB.WithContext(ctx).Begin()
@@ -99,9 +86,9 @@ func (r *repositoryLoginImpl) Login(ctx context.Context, tx *gorm.DB, req *schem
 
 	session := models.UserSession{
 		UserID:    user.ID,
-		Token:     token,
+		Token:     req.Token,
 		LastLogin: time.Now(),
-		ExpiredAt: pkg.CalculateExpiration(time.Now().Add(configs.TokenExpired).Unix()),
+		ExpiredAt: req.ExpiredAt,
 	}
 
 	if err := tx.Create(&session).Error; err != nil {

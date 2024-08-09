@@ -21,8 +21,10 @@ type SchemaDataUser struct {
 	RoleId       string    `json:"role_id"`
 	Summary      string    `json:"summary"`
 	OtpCode      string    `json:"otp_code"`
+	Token        string    `json:"token"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
+	ExpiredAt    time.Time `json:"expired_at"`
 }
 
 type LoginUserResponse struct {

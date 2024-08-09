@@ -1,6 +1,6 @@
 create table if not exists biodata(
     id varchar(36) primary key,
-    firstname varchar(100),
+    firstname varchar(100) not null,
     lastname varchar(100),
     email varchar(100),
     phone varchar(100),

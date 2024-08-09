@@ -18,7 +18,7 @@ type TestMiddleware struct {
 
 func SetupAuthRoutes(route *gin.RouterGroup, db *gorm.DB, cfg config.Config) {
 	// Initialize dependencies
-	loginRepository := repositories.NewRepositoryLoginImpl(nil, db)
+	loginRepository := repositories.NewRepositoryLoginImpl(db)
 	loginService := services.NewServiceLoginImpl(loginRepository, nil)
 	loginHandler := handlers.NewHandlerLogin(loginService)
 
