@@ -12,7 +12,7 @@ COPY . .
 
 RUN mkdir -p /build
 
-RUN  go build -o jobseeker-api .cmd/main.go
+#RUN  go build -o jobseeker-api .cmd/main.go
 
 #COPY jobseeker-api /build
 #
