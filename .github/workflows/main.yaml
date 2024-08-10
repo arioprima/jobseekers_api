@@ -28,3 +28,4 @@ jobs:
             docker stop jobseeker-api
             docker rm jobseeker-api
             docker build -t arioprima1/jovacancies-api:1.0.0 -t arioprima1/jovacancies-api:latest .
+            docker run -d --name jobseeker-api --network devnetwork -p 8081:8080 arioprima1/jovacancies-api
