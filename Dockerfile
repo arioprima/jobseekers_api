@@ -14,11 +14,11 @@ RUN mkdir -p /build
 
 RUN  go build -o jobseeker-api cmd/main.go
 
-COPY jobseeker-api /build/
+RUN cp jobseeker-api /build/
 
-COPY config.yaml /build/
+RUN cp config.yaml /build/
 
-COPY docs /build/
+RUN cp docs /build/
 
 WORKDIR /build
 
