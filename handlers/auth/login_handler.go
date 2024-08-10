@@ -6,6 +6,7 @@ import (
 	"github.com/arioprima/jobseekers_api/schemas"
 	services "github.com/arioprima/jobseekers_api/services/auth"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 )
 
@@ -56,6 +57,7 @@ func (h *HandlerLogin) LoginHandler(ctx *gin.Context) {
 
 	res, err, authToken := h.Service.LoginService(ctx, nil, &loginRequest)
 	if err != nil {
+		log.Println("MasukKesiniGkya")
 		switch err.Type {
 		case "error_01":
 			helpers.ApiResponse(ctx, http.StatusNotFound, "error", "Email not found", nil, nil)

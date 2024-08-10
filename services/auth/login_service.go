@@ -9,7 +9,6 @@ import (
 	"github.com/arioprima/jobseekers_api/pkg"
 	repositories "github.com/arioprima/jobseekers_api/repositories/auth"
 	"github.com/arioprima/jobseekers_api/schemas"
-	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"time"
 )
@@ -20,13 +19,11 @@ type ServiceLogin interface {
 
 type serviceLoginImpl struct {
 	repository repositories.RepositoryLogin
-	Log        *logrus.Logger
 }
 
-func NewServiceLoginImpl(repository repositories.RepositoryLogin, log *logrus.Logger) ServiceLogin {
+func NewServiceLoginImpl(repository repositories.RepositoryLogin) ServiceLogin {
 	return &serviceLoginImpl{
 		repository: repository,
-		Log:        log,
 	}
 }
 

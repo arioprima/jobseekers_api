@@ -19,7 +19,7 @@ type TestMiddleware struct {
 func SetupAuthRoutes(route *gin.RouterGroup, db *gorm.DB, cfg config.Config) {
 	// Initialize dependencies
 	loginRepository := repositories.NewRepositoryLoginImpl(db)
-	loginService := services.NewServiceLoginImpl(loginRepository, nil)
+	loginService := services.NewServiceLoginImpl(loginRepository)
 	loginHandler := handlers.NewHandlerLogin(loginService)
 
 	//register
@@ -37,6 +37,11 @@ func SetupAuthRoutes(route *gin.RouterGroup, db *gorm.DB, cfg config.Config) {
 	resendOtpService := services.NewServiceResendOtpImpl(resendOtpRepository)
 	resendOtpHandler := handlers.NewResendOtpHandler(resendOtpService)
 
+	//google
+	googleRepository := repositories.NewRepositoryGoogleImpl(db)
+	googleService := services.NewServiceGoogleImpl(googleRepository)
+	googleHandler := handlers.NewServiceGoogleImpl(googleService)
+
 	// Initialize OAuth
 	handlers.InitializeOAuthConfig(cfg)
 	// Setup routes
@@ -46,7 +51,7 @@ func SetupAuthRoutes(route *gin.RouterGroup, db *gorm.DB, cfg config.Config) {
 	groupRoute.GET("/verify-email", verifyEmailHandler.VerifyEmailHandler)
 	groupRoute.PUT("/resend-otp/:user_id", resendOtpHandler.ResendOtpHandler)
 	groupRoute.GET("/login/google", handlers.GoogleLogin)
-	groupRoute.GET("/google/callback", handlers.GoogleCallback)
+	groupRoute.GET("/google/callback", googleHandler.GoogleCallback)
 
 	user := &TestMiddleware{
 		ID:    1,

@@ -2,7 +2,6 @@ package pkg
 
 import (
 	"github.com/arioprima/jobseekers_api/schemas"
-	"log"
 	"reflect"
 
 	"github.com/go-playground/validator/v10"
@@ -17,11 +16,9 @@ func ValidatorLogin(s interface{}, config []schemas.ErrorMetaConfig) (string, in
 	for _, cfg := range config {
 		fieldValue, ok := getFieldValue(s, cfg.Field)
 		if !ok {
-			log.Printf("Field %s not found in struct", cfg.Field)
 			continue
 		}
 
-		log.Printf("Validating field: %s with value: %v", cfg.Field, fieldValue)
 		if errResponse == "" { // Only validate if no error exists for this field
 			switch cfg.Tag {
 			case "required":
@@ -65,11 +62,9 @@ func ValidatorRegister(s interface{}, config []schemas.ErrorMetaConfig) (string,
 	for _, cfg := range config {
 		fieldValue, ok := getFieldValue(s, cfg.Field)
 		if !ok {
-			log.Printf("Field %s not found in struct", cfg.Field)
 			continue
 		}
 
-		log.Printf("Validating field: %s with value: %v", cfg.Field, fieldValue)
 		if errResponse == "" { // Only validate if no error exists for this field
 			switch cfg.Tag {
 			case "required":
