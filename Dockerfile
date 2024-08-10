@@ -22,4 +22,6 @@ RUN cp -r docs /build/
 
 WORKDIR /build
 
+EXPOSE 8081
+
 CMD ["./jobseeker-api"]
