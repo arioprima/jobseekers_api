@@ -25,4 +25,3 @@ jobs:
             git stash
             git checkout main
             git pull origin main
-            docker build -t arioprima1/jovacancies-api:1.0.0 -t arioprima1/jovacancies-api:latest .
