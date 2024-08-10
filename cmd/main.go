@@ -5,6 +5,8 @@ import (
 	_ "github.com/arioprima/jobseekers_api/docs"
 	"github.com/arioprima/jobseekers_api/middlewares"
 	"github.com/arioprima/jobseekers_api/routes"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -21,6 +23,9 @@ func main() {
 		log.Fatalf("Error opening database connection: %v", err)
 	}
 	router := gin.Default()
+
+	store := cookie.NewStore([]byte(loadConfig.TokenSecret))
+	router.Use(sessions.Sessions("jobvacancies_seasion", store))
 
 	middlewares.SetupCorsMiddleware(router)
 
