@@ -18,7 +18,7 @@ RUN cp jobseeker-api /build/
 
 RUN cp config.yaml /build/
 
-RUN cp docs /build/
+RUN cp -r docs /build/
 
 WORKDIR /build
 
