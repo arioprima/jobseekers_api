@@ -29,11 +29,11 @@ func main() {
 
 	middlewares.SetupCorsMiddleware(router)
 
-	router.GET("/swagger.yaml", func(c *gin.Context) {
+	router.GET("/job-vacancies-api/swagger.yaml", func(c *gin.Context) {
 		c.File("docs/swagger.yaml")
 	})
 
-	router.GET("/job-vacancies-api/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/swagger.yaml")))
+	router.GET("/job-vacancies-api/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/job-vacancies-api/swagger.yaml")))
 
 	router.NoRoute(func(ctx *gin.Context) {
 		ctx.JSON(404, gin.H{
